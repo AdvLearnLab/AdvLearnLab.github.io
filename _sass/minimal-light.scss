@@ -1156,8 +1156,8 @@ header a {
   box-shadow: 0 8px 22px rgba(20, 30, 50, 0.045);
   display: grid;
   gap: 14px;
-  grid-template-columns: 92px minmax(0, 1fr);
-  min-height: 128px;
+  grid-template-columns: 128px minmax(0, 1fr);
+  min-height: 180px;
   padding: 14px;
 }
 
@@ -1172,7 +1172,7 @@ header a {
   object-fit: cover;
   object-position: center 18%;
   padding: 0;
-  width: 92px;
+  width: 128px;
 }
 
 .student-card-body {
@@ -1964,13 +1964,13 @@ strong {
   }
 
   .student-card {
-    grid-template-columns: 78px minmax(0, 1fr);
-    min-height: 112px;
+    grid-template-columns: 104px minmax(0, 1fr);
+    min-height: 146px;
     padding: 12px;
   }
 
   .student-photo {
-    width: 78px;
+    width: 104px;
   }
 
   .hero-card {
