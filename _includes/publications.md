@@ -1,5 +1,9 @@
 <h2 id="publications">Publications</h2>
 
+<p class="publication-note">Selected first-author works are listed first, followed by manuscripts under review and representative collaborative papers.</p>
+
+<h3 class="pub-section-title" id="selected-publications">Selected Publications</h3>
+
 <div class="publications publications-page">
 <ol class="bibliography">
 
@@ -393,7 +397,201 @@ by Memories</a></div>
 </li>
 
 
-<br>
+</ol>
+</div>
+
+<h3 class="pub-section-title" id="in-peer-review">In Peer Review / Preprints</h3>
+
+<div class="publications publications-page">
+<ol class="bibliography">
+
+<li>
+<div class="pub-row">
+  <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
+    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <abbr class="badge">arXiv</abbr>
+  </div>
+  <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
+    <div class="title"><a href="https://arxiv.org/abs/2608.09688">Confusion-Geometry Rebalancing for Long-Tailed Adversarial Training</a></div>
+    <div class="author"><strong>Mengnan Zhao</strong>, Geyong Min, Lihe Zhang, Tianhang Zheng, Jie Cui</div>
+    <div class="periodical"><em>arXiv preprint, 2026.</em></div>
+    <div class="pub-rank-badges"><span>In Peer Review</span><span>Preprint</span><span>Robust Learning</span></div>
+  </div>
+</div>
+</li>
+
+<li>
+<div class="pub-row">
+  <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
+    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <abbr class="badge">arXiv</abbr>
+  </div>
+  <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
+    <div class="title"><a href="https://arxiv.org/abs/2604.24350">Unveiling the Backdoor Mechanism Hidden Behind Catastrophic Overfitting in Fast Adversarial Training</a></div>
+    <div class="author"><strong>Mengnan Zhao</strong>, Lihe Zhang, Tianhang Zheng, Bo Wang, Baocai Yin</div>
+    <div class="periodical"><em>arXiv preprint, 2026.</em></div>
+    <div class="pub-rank-badges"><span>In Peer Review</span><span>Preprint</span><span>Adversarial Training</span></div>
+  </div>
+</div>
+</li>
+
+<li>
+<div class="pub-row">
+  <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
+    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <abbr class="badge">arXiv</abbr>
+  </div>
+  <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
+    <div class="title"><a href="https://arxiv.org/abs/2501.00054">AdvAnchor: Enhancing Diffusion Model Unlearning with Adversarial Anchors</a></div>
+    <div class="author"><strong>Mengnan Zhao</strong>, Lihe Zhang, Xingyi Yang, Tianhang Zheng, Baocai Yin</div>
+    <div class="periodical"><em>arXiv preprint, 2025.</em></div>
+    <div class="pub-rank-badges"><span>In Peer Review</span><span>Preprint</span><span>Diffusion Unlearning</span></div>
+  </div>
+</div>
+</li>
+
+<li>
+<div class="pub-row">
+  <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
+    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <abbr class="badge">arXiv</abbr>
+  </div>
+  <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
+    <div class="title"><a href="https://arxiv.org/abs/2410.15042">Adversarial Training: A Survey</a></div>
+    <div class="author"><strong>Mengnan Zhao</strong>, Lihe Zhang, Jingwen Ye, Huchuan Lu, Baocai Yin, Xinchao Wang</div>
+    <div class="periodical"><em>arXiv preprint, 2024.</em></div>
+    <div class="pub-rank-badges"><span>In Peer Review</span><span>Preprint</span><span>Survey</span></div>
+  </div>
+</div>
+</li>
+
+</ol>
+</div>
+
+<h3 class="pub-section-title" id="collaborative-papers">Collaborative Papers</h3>
+
+<div class="publications publications-page">
+<ol class="bibliography">
+
+<li>
+<div class="pub-row">
+  <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
+    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <abbr class="badge">TCSVT</abbr>
+  </div>
+  <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
+    <div class="title"><a href="https://doi.org/10.1109/TCSVT.2026.3704659">BadPromptFL: Parameters-Free Backdoor Attack on Vision-Language Federated Learning</a></div>
+    <div class="author">Maozhen Zhang, <strong>Mengnan Zhao</strong>, Wei Wang, Tianhang Zheng, Bo Wang</div>
+    <div class="periodical"><em>IEEE Transactions on Circuits and Systems for Video Technology, 2026.</em></div>
+    <div class="pub-rank-badges"><span>Collaborative</span><span>Journal</span><span>SCI I</span><span>CCF B</span></div>
+  </div>
+</div>
+</li>
+
+<li>
+<div class="pub-row">
+  <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
+    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <abbr class="badge">IoTJ</abbr>
+  </div>
+  <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
+    <div class="title"><a href="https://dblp.org/rec/journals/iotj/ZhangZWW26">Stealthy Backdoor Carriers: The Threat of Visual Prompts to CLIP</a></div>
+    <div class="author">Maozhen Zhang, <strong>Mengnan Zhao</strong>, Wei Wang, Bo Wang</div>
+    <div class="periodical"><em>IEEE Internet of Things Journal, 2026.</em></div>
+    <div class="pub-rank-badges"><span>Collaborative</span><span>Journal</span><span>SCI I</span></div>
+  </div>
+</div>
+</li>
+
+<li>
+<div class="pub-row">
+  <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
+    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <abbr class="badge">KBS</abbr>
+  </div>
+  <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
+    <div class="title"><a href="https://dblp.org/rec/journals/kbs/ZhangZWW26">DualVeil: Persistent and Invisible Backdoor Attacks in Federated Learning via Dual Optimization</a></div>
+    <div class="author">Maozhen Zhang, <strong>Mengnan Zhao</strong>, Wei Wang, Bo Wang</div>
+    <div class="periodical"><em>Knowledge-Based Systems, 2026.</em></div>
+    <div class="pub-rank-badges"><span>Collaborative</span><span>Journal</span><span>SCI I</span><span>CCF C</span></div>
+  </div>
+</div>
+</li>
+
+<li>
+<div class="pub-row">
+  <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
+    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <abbr class="badge">arXiv</abbr>
+  </div>
+  <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
+    <div class="title"><a href="https://arxiv.org/abs/2608.10621">ProbGuard: Calibrated Safety Risk Estimation from LLM Output Distributions</a></div>
+    <div class="author">Xinzhe Huang, Biwu Yao, Kedong Xiu, <strong>Mengnan Zhao</strong>, Di Wang, Puning Zhao, Tianhang Zheng</div>
+    <div class="periodical"><em>arXiv preprint, 2026.</em></div>
+    <div class="pub-rank-badges"><span>Collaborative</span><span>Preprint</span><span>LLM Safety</span></div>
+  </div>
+</div>
+</li>
+
+<li>
+<div class="pub-row">
+  <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
+    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <abbr class="badge">arXiv</abbr>
+  </div>
+  <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
+    <div class="title"><a href="https://arxiv.org/abs/2607.26998">AgentSnare: Learning to Delay, Divert, and Defuse Autonomous Penetration Agents</a></div>
+    <div class="author">Ruoyu Wang, Heng Zhao, Renjie Wu, <strong>Mengnan Zhao</strong>, Zhixuan Chu, Wanyu Lin, Tianhang Zheng</div>
+    <div class="periodical"><em>arXiv preprint, 2026.</em></div>
+    <div class="pub-rank-badges"><span>Collaborative</span><span>Preprint</span><span>Agent Security</span></div>
+  </div>
+</div>
+</li>
+
+<li>
+<div class="pub-row">
+  <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
+    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <abbr class="badge">arXiv</abbr>
+  </div>
+  <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
+    <div class="title"><a href="https://arxiv.org/abs/2605.05224">Channel-Level Semantic Perturbations: Unlearnable Examples for Diverse Training Paradigms</a></div>
+    <div class="author">Bo Wang, Jia Ni, <strong>Mengnan Zhao</strong>, Zhan Qin, Kui Ren</div>
+    <div class="periodical"><em>arXiv preprint, 2026.</em></div>
+    <div class="pub-rank-badges"><span>Collaborative</span><span>Preprint</span><span>Data Protection</span></div>
+  </div>
+</div>
+</li>
+
+<li>
+<div class="pub-row">
+  <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
+    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <abbr class="badge">EMNLP</abbr>
+  </div>
+  <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
+    <div class="title"><a href="https://aclanthology.org/people/m/mengnan-zhao/">Tagging-Augmented Generation: Assisting Language Models in Finding Intricate Knowledge In Long Contexts</a></div>
+    <div class="author">Anwesan Pal, Karen Hovsepian, Tinghao Guo, <strong>Mengnan Zhao</strong>, Somendra Tripathi, Nikos Kanakaris, George Mihaila, Sumit Nigam</div>
+    <div class="periodical"><em>Proceedings of EMNLP: Industry Track, 2025.</em></div>
+    <div class="pub-rank-badges"><span>Collaborative</span><span>Conference</span><span>CCF B</span></div>
+  </div>
+</div>
+</li>
+
+<li>
+<div class="pub-row">
+  <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
+    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <abbr class="badge">TMM</abbr>
+  </div>
+  <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
+    <div class="title"><a href="https://dblp.org/rec/journals/tmm/JiangKZZY25">CollabLearn: Propelling Weakly-Supervised Referring Image Segmentation Through Collaboration Between Semantics and Details</a></div>
+    <div class="author">Chao Jiang, Yuqiu Kong, <strong>Mengnan Zhao</strong>, Lihe Zhang, Baocai Yin</div>
+    <div class="periodical"><em>IEEE Transactions on Multimedia, 2025.</em></div>
+    <div class="pub-rank-badges"><span>Collaborative</span><span>Journal</span><span>SCI I</span><span>CCF B</span></div>
+  </div>
+</div>
+</li>
 
 </ol>
 </div>
