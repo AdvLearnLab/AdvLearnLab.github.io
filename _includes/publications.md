@@ -212,7 +212,7 @@
 <div class="pub-row">
 
   <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
-    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <img src="assets/img/research-cloud.jpg" class="teaser img-fluid z-depth-1">
     <abbr class="badge">TCSVT</abbr>
   </div>
 
@@ -237,7 +237,7 @@
 <div class="pub-row">
 
   <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
-    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <img src="assets/img/research-cloud.jpg" class="teaser img-fluid z-depth-1">
     <abbr class="badge">TCSVT</abbr>
   </div>
 
@@ -350,7 +350,7 @@ by Memories</a></div>
 <div class="pub-row">
 
   <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
-    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <img src="assets/img/research-cloud.jpg" class="teaser img-fluid z-depth-1">
     <abbr class="badge">arXiv</abbr>
   </div>
 
@@ -375,7 +375,7 @@ by Memories</a></div>
 <div class="pub-row">
 
   <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
-    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <img src="assets/img/research-cloud.jpg" class="teaser img-fluid z-depth-1">
     <abbr class="badge">arXiv</abbr>
   </div>
 
@@ -408,7 +408,7 @@ by Memories</a></div>
 <li>
 <div class="pub-row">
   <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
-    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <img src="assets/img/research-cloud.jpg" class="teaser img-fluid z-depth-1">
     <abbr class="badge">arXiv</abbr>
   </div>
   <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
@@ -423,7 +423,7 @@ by Memories</a></div>
 <li>
 <div class="pub-row">
   <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
-    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <img src="assets/img/research-cloud.jpg" class="teaser img-fluid z-depth-1">
     <abbr class="badge">arXiv</abbr>
   </div>
   <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
@@ -438,7 +438,7 @@ by Memories</a></div>
 <li>
 <div class="pub-row">
   <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
-    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <img src="assets/img/research-cloud.jpg" class="teaser img-fluid z-depth-1">
     <abbr class="badge">arXiv</abbr>
   </div>
   <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
@@ -453,7 +453,7 @@ by Memories</a></div>
 <li>
 <div class="pub-row">
   <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
-    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <img src="assets/img/research-cloud.jpg" class="teaser img-fluid z-depth-1">
     <abbr class="badge">arXiv</abbr>
   </div>
   <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
@@ -476,7 +476,7 @@ by Memories</a></div>
 <li>
 <div class="pub-row">
   <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
-    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <img src="assets/img/research-cloud.jpg" class="teaser img-fluid z-depth-1">
     <abbr class="badge">TCSVT</abbr>
   </div>
   <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
@@ -491,7 +491,7 @@ by Memories</a></div>
 <li>
 <div class="pub-row">
   <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
-    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <img src="assets/img/research-cloud.jpg" class="teaser img-fluid z-depth-1">
     <abbr class="badge">IoTJ</abbr>
   </div>
   <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
@@ -506,7 +506,7 @@ by Memories</a></div>
 <li>
 <div class="pub-row">
   <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
-    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <img src="assets/img/research-cloud.jpg" class="teaser img-fluid z-depth-1">
     <abbr class="badge">KBS</abbr>
   </div>
   <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
@@ -521,7 +521,7 @@ by Memories</a></div>
 <li>
 <div class="pub-row">
   <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
-    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <img src="assets/img/research-cloud.jpg" class="teaser img-fluid z-depth-1">
     <abbr class="badge">arXiv</abbr>
   </div>
   <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
@@ -536,7 +536,7 @@ by Memories</a></div>
 <li>
 <div class="pub-row">
   <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
-    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <img src="assets/img/research-cloud.jpg" class="teaser img-fluid z-depth-1">
     <abbr class="badge">arXiv</abbr>
   </div>
   <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
@@ -551,7 +551,7 @@ by Memories</a></div>
 <li>
 <div class="pub-row">
   <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
-    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <img src="assets/img/research-cloud.jpg" class="teaser img-fluid z-depth-1">
     <abbr class="badge">arXiv</abbr>
   </div>
   <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
@@ -566,7 +566,7 @@ by Memories</a></div>
 <li>
 <div class="pub-row">
   <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
-    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <img src="assets/img/research-cloud.jpg" class="teaser img-fluid z-depth-1">
     <abbr class="badge">EMNLP</abbr>
   </div>
   <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
@@ -581,7 +581,7 @@ by Memories</a></div>
 <li>
 <div class="pub-row">
   <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
-    <img src="assets/img/common.jpg" class="teaser img-fluid z-depth-1">
+    <img src="assets/img/research-cloud.jpg" class="teaser img-fluid z-depth-1">
     <abbr class="badge">TMM</abbr>
   </div>
   <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">

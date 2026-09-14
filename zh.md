@@ -21,7 +21,7 @@ permalink: /zh.html
 
 <h2 id="about-me">个人简介</h2>
 
-赵梦楠于 2021 年在大连理工大学获得硕士学位，导师为 [王波教授](http://www.aisdut.cn/WangBo/publications.html)；于 2025 年在大连理工大学获得博士学位，导师为 [孔雨秋博士](https://scholar.google.com/citations?user=nKrhk4UAAAAJ&hl=zh-CN)、[张立和教授](https://scholar.google.com/citations?user=XGPdQbIAAAAJ) 与 [尹宝才教授](https://www.aminer.org/profile/yin-baocai/542d6bb7dabfae12b9804aa7)。
+赵梦楠于 2021 年在大连理工大学获得硕士学位，导师为 [王波教授](http://www.aisdut.cn/WangBo/publications.html)；于 2025 年在大连理工大学获得博士学位，导师为 [张立和教授](https://scholar.google.com/citations?user=XGPdQbIAAAAJ) 与 [尹宝才教授](https://www.aminer.org/profile/yin-baocai/542d6bb7dabfae12b9804aa7)。
 博士期间曾赴新加坡国立大学 Learning and Vision Lab 访问，合作导师为 [王鑫超教授](https://scholar.google.com/citations?user=w69Buq0AAAAJ&hl=en)。
 
 欢迎通过 __Email 或微信（15822843520）__ 联系。
