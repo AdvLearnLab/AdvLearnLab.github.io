@@ -320,23 +320,27 @@ screen and (min-width: 480px) {
   margin-bottom: 5px;
 }
 
-.publications ol.bibliography li .periodical {
+.publications ol.bibliography li .pub-meta {
   align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 9px;
+}
+
+.publications ol.bibliography li .periodical {
   color: #667085;
-  display: inline-flex;
   font-size: 14.5px;
   line-height: 1.45;
-  margin: 0 8px 9px 0;
-  vertical-align: middle;
+  margin: 0;
 }
 
 .publications ol.bibliography li .pub-rank-badges {
   align-items: center;
-  display: inline-flex;
+  display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin: 0 0 9px;
-  vertical-align: middle;
+  margin: 0;
 }
 
 .publications ol.bibliography li .pub-rank-badges span {
