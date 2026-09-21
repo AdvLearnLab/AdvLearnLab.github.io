@@ -321,16 +321,22 @@ screen and (min-width: 480px) {
 }
 
 .publications ol.bibliography li .periodical {
+  align-items: center;
   color: #667085;
+  display: inline-flex;
   font-size: 14.5px;
-  margin-bottom: 7px;
+  line-height: 1.45;
+  margin: 0 8px 9px 0;
+  vertical-align: middle;
 }
 
 .publications ol.bibliography li .pub-rank-badges {
-  display: flex;
+  align-items: center;
+  display: inline-flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin: 0 0 10px;
+  margin: 0 0 9px;
+  vertical-align: middle;
 }
 
 .publications ol.bibliography li .pub-rank-badges span {
