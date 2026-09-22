@@ -9,7 +9,7 @@ permalink: /students.html
   <h1>Students & Prospective Students</h1>
   <p>
     欢迎对可信机器学习、计算机视觉、隐私保护和安全方向感兴趣的同学加入。
-    如希望进一步了解团队的研究方向、科研氛围与日常学习情况，欢迎联系下方在读学生交流。添加微信时请简单注明姓名、学校及咨询方向。
+    如希望进一步了解团队的研究方向、科研氛围与日常学习情况，欢迎联系下方在读学生交流。
   </p>
 </div>
 
@@ -26,7 +26,10 @@ permalink: /students.html
         <span>CET-6</span>
         <span>国奖 × 2</span>
       </div>
-      <p class="student-contact"><span>微信</span><code>xt18325407136</code></p>
+      <div class="student-contact" aria-label="许潼微信">
+        <span class="student-contact-label">微信咨询</span>
+        <span class="student-contact-id">xt18325407136</span>
+      </div>
     </div>
   </article>
 
@@ -39,7 +42,10 @@ permalink: /students.html
         <span>初试 370</span>
         <span>CET-6</span>
       </div>
-      <p class="student-contact"><span>微信</span><code>xxysh12581</code></p>
+      <div class="student-contact" aria-label="许超微信">
+        <span class="student-contact-label">微信咨询</span>
+        <span class="student-contact-id">xxysh12581</span>
+      </div>
     </div>
   </article>
 </div>
