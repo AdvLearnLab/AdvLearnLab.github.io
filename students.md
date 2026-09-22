@@ -54,7 +54,7 @@ permalink: /students.html
 
 <div class="student-recruiting">
   <div class="recruiting-panel">
-    <h3>我在找什么样的人？<span>读博意向者优先</span><span class="recruiting-tag-attitude">认真</span><span class="recruiting-tag-attitude">不摆烂</span></h3>
+    <h3>我在找什么样的人？<span>读博意向者优先</span><span class="recruiting-tag-attitude">认真</span></h3>
     <article>
       <strong>动手能力</strong>
       <p>科研里真正的门槛不是失败，是连手都不敢伸。</p>
