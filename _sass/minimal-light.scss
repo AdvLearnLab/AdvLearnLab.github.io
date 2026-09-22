@@ -1349,18 +1349,247 @@ header a {
   margin: 0;
 }
 
-.student-recruiting-close {
-  background: var(--panel-bg);
+.student-application-cta {
+  align-items: center;
+  background: linear-gradient(135deg, var(--soft-blue), var(--panel-bg));
   border: 1px solid rgba(49, 92, 150, 0.16);
-  border-left: 4px solid var(--accent-2);
   border-radius: 8px;
   box-shadow: 0 8px 22px rgba(20, 30, 50, 0.04);
-  color: var(--accent) !important;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  margin-top: 18px;
+  padding: 16px 18px;
+}
+
+.student-application-cta h3 {
+  color: var(--ink);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 15px !important;
+  font-size: 17px;
   font-weight: 760;
-  margin: 14px 0 0 !important;
-  padding: 13px 16px;
+  margin: 0 0 3px;
+}
+
+.student-application-cta p {
+  color: var(--muted);
+  font-size: 13.5px;
+  margin: 0;
+}
+
+.application-open,
+.application-send,
+.application-cancel,
+.application-close {
+  cursor: pointer;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.application-open,
+.application-send {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 760;
+  padding: 10px 15px;
+  white-space: nowrap;
+}
+
+.application-open:hover,
+.application-send:hover {
+  filter: brightness(0.92);
+}
+
+.application-status {
+  background: var(--soft-green);
+  border: 1px solid rgba(15, 118, 110, 0.16);
+  border-radius: 6px;
+  color: var(--accent-2) !important;
+  font-weight: 700;
+  margin-top: 12px;
+  padding: 10px 12px;
+}
+
+.application-dialog {
+  background: var(--panel-bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 24px 70px rgba(20, 30, 50, 0.24);
+  color: var(--ink);
+  max-height: calc(100vh - 40px);
+  max-width: 620px;
+  padding: 0;
+  width: calc(100% - 32px);
+}
+
+.application-dialog::backdrop {
+  background: rgba(15, 23, 42, 0.54);
+  backdrop-filter: blur(3px);
+}
+
+.application-form {
+  margin: 0;
+  padding: 22px;
+}
+
+.application-dialog-header {
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.application-dialog-header span {
+  color: var(--accent-2);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.application-dialog-header h2 {
+  font-size: 22px;
+  margin: 3px 0 0;
+}
+
+.application-close {
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  font-size: 25px;
+  line-height: 1;
+  padding: 2px 4px;
+}
+
+.application-fields {
+  display: grid;
+  gap: 13px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.application-form label > span {
+  color: var(--ink);
+  display: block;
+  font-size: 12.5px;
+  font-weight: 720;
+  margin-bottom: 6px;
+}
+
+.application-form input[type="text"],
+.application-form input[type="email"],
+.application-form textarea {
+  background: var(--panel-bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-sizing: border-box;
+  color: var(--ink);
+  font: inherit;
+  outline: 0;
+  padding: 10px 11px;
+  width: 100%;
+}
+
+.application-form input:focus,
+.application-form textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(49, 92, 150, 0.12);
+}
+
+.application-message {
+  display: block;
+  margin-top: 13px;
+}
+
+.application-message small {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.application-form textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+.application-upload {
+  background: var(--soft-blue);
+  border: 1px dashed rgba(49, 92, 150, 0.34);
+  border-radius: 8px;
+  display: block;
+  margin-top: 13px;
+  padding: 13px;
+}
+
+.application-upload strong,
+.application-upload small {
+  display: block;
+}
+
+.application-upload strong {
+  color: var(--ink);
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.application-upload small,
+.application-privacy {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.application-upload input {
+  margin-top: 10px;
+  max-width: 100%;
+}
+
+.application-privacy {
+  margin: 10px 0 0;
+}
+
+.application-actions {
+  border-top: 1px solid var(--line);
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 16px;
+  padding-top: 14px;
+}
+
+.application-cancel {
+  background: var(--panel-bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 15px;
+}
+
+.application-honey {
+  display: none !important;
+}
+
+@media screen and (max-width: 620px) {
+  .student-application-cta {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .application-open {
+    align-self: flex-start;
+  }
+
+  .application-dialog {
+    max-height: calc(100vh - 20px);
+    width: calc(100% - 20px);
+  }
+
+  .application-form {
+    padding: 18px;
+  }
+
+  .application-fields {
+    grid-template-columns: 1fr;
+  }
 }
 
 .venue-strip {

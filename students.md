@@ -90,4 +90,70 @@ permalink: /students.html
   </div>
 </div>
 
-<p class="student-recruiting-close">简历投来，随时开聊。</p>
+<section class="student-application-cta" aria-labelledby="application-heading">
+  <div>
+    <h3 id="application-heading">简历投来，随时开聊。</h3>
+    <p>介绍一下你自己、感兴趣的方向，以及想一起探索的问题。</p>
+  </div>
+  <button class="application-open" id="application-open" type="button">发送简历</button>
+</section>
+
+<p class="application-status" id="application-status" role="status" hidden>简历已发送，感谢你的来信。</p>
+
+<dialog class="application-dialog" id="application-dialog" aria-labelledby="application-dialog-title">
+  <form class="application-form" id="application-form" action="https://formsubmit.co/zmn@ahu.edu.cn" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="_subject" value="学生申请｜个人主页简历投递">
+    <input type="hidden" name="_template" value="table">
+    <input type="hidden" name="_captcha" value="false">
+    <input type="hidden" name="_next" id="application-next" value="">
+    <input class="application-honey" type="text" name="_honey" tabindex="-1" autocomplete="off">
+    <header class="application-dialog-header">
+      <div><span>Prospective Students</span><h2 id="application-dialog-title">发送简历</h2></div>
+      <button class="application-close" id="application-close" type="button" aria-label="关闭申请窗口">×</button>
+    </header>
+    <div class="application-fields">
+      <label><span>姓名</span><input type="text" name="姓名" autocomplete="name" required></label>
+      <label><span>联系邮箱</span><input type="email" name="邮箱" autocomplete="email" required></label>
+      <label><span>学校</span><input type="text" name="学校" autocomplete="organization" required></label>
+      <label><span>研究方向</span><input type="text" name="研究方向" placeholder="如：可信机器学习" required></label>
+    </div>
+    <label class="application-message">
+      <span>想说的话 <small>选填</small></span>
+      <textarea name="留言" rows="4" placeholder="可以简单介绍研究经历、兴趣与计划。"></textarea>
+    </label>
+    <label class="application-upload">
+      <span>上传简历</span>
+      <strong>选择 PDF 或 Word 文件</strong>
+      <small>支持 .pdf、.doc、.docx，文件不超过 10 MB</small>
+      <input id="application-file" type="file" name="attachment" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required>
+    </label>
+    <p class="application-privacy">提交内容将通过 FormSubmit 转发至 zmn@ahu.edu.cn。</p>
+    <footer class="application-actions">
+      <button class="application-cancel" id="application-cancel" type="button">取消</button>
+      <button class="application-send" type="submit">发送</button>
+    </footer>
+  </form>
+</dialog>
+
+<script>
+  (function () {
+    const dialog = document.getElementById('application-dialog');
+    const form = document.getElementById('application-form');
+    const file = document.getElementById('application-file');
+    const next = document.getElementById('application-next');
+    const status = document.getElementById('application-status');
+    if (!dialog || !form) return;
+    next.value = window.location.origin + window.location.pathname + '?submitted=1';
+    document.getElementById('application-open').addEventListener('click', function () { dialog.showModal(); });
+    document.getElementById('application-close').addEventListener('click', function () { dialog.close(); });
+    document.getElementById('application-cancel').addEventListener('click', function () { dialog.close(); });
+    dialog.addEventListener('click', function (event) { if (event.target === dialog) dialog.close(); });
+    file.addEventListener('change', function () {
+      file.setCustomValidity(file.files[0] && file.files[0].size > 10 * 1024 * 1024 ? '简历文件不能超过 10 MB。' : '');
+    });
+    if (new URLSearchParams(window.location.search).get('submitted') === '1') {
+      status.hidden = false;
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  })();
+</script>
