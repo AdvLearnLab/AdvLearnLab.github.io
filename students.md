@@ -104,7 +104,7 @@ permalink: /students.html
   <form class="application-form" id="application-form" action="https://formsubmit.co/zmn@ahu.edu.cn" method="POST" enctype="multipart/form-data">
     <input type="hidden" name="_subject" value="学生申请｜个人主页简历投递">
     <input type="hidden" name="_template" value="table">
-    <input type="hidden" name="_autoresponse" value="你好！你的简历和申请信息已成功提交，我们已经收到。感谢你对团队的关注，如研究方向匹配，将尽快与你联系。请勿重复提交。——赵梦楠，安徽大学">
+    <input type="hidden" name="_captcha" value="false">
     <input type="hidden" name="_next" id="application-next" value="">
     <input class="application-honey" type="text" name="_honey" tabindex="-1" autocomplete="off">
     <header class="application-dialog-header">
