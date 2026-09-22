@@ -1323,21 +1323,17 @@ header a {
   padding: 6px 9px;
 }
 
+.student-recruiting h3 .recruiting-tag-attitude {
+  background: var(--soft-green);
+  border-color: rgba(15, 118, 110, 0.16);
+  color: var(--accent-2);
+}
+
 .recruiting-panel article {
   background: rgba(49, 92, 150, 0.035);
   border: 1px solid rgba(49, 92, 150, 0.08);
   border-radius: 8px;
   padding: 11px 12px;
-}
-
-.recruiting-panel .recruiting-priority {
-  background: var(--soft-amber);
-  border-color: rgba(180, 83, 9, 0.18);
-  border-left: 4px solid var(--accent-3);
-}
-
-.recruiting-panel .recruiting-priority strong {
-  color: var(--accent-3);
 }
 
 .recruiting-panel strong {

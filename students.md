@@ -54,11 +54,7 @@ permalink: /students.html
 
 <div class="student-recruiting">
   <div class="recruiting-panel">
-    <h3>我在找什么样的人？<span>读博意向者优先</span></h3>
-    <article class="recruiting-priority">
-      <strong>认真投入，不接受摆烂</strong>
-      <p>能力可以逐步培养，困难也可以一起解决，但认真、主动和对自己负责是底线。希望你愿意踏实做事、主动推进并及时沟通；如果只想混日子、长期摆烂，这里不适合你。</p>
-    </article>
+    <h3>我在找什么样的人？<span>读博意向者优先</span><span class="recruiting-tag-attitude">认真</span><span class="recruiting-tag-attitude">不摆烂</span></h3>
     <article>
       <strong>动手能力</strong>
       <p>科研里真正的门槛不是失败，是连手都不敢伸。</p>
