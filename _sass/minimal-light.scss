@@ -1325,6 +1325,16 @@ header a {
   padding: 11px 12px;
 }
 
+.recruiting-panel .recruiting-priority {
+  background: var(--soft-amber);
+  border-color: rgba(180, 83, 9, 0.18);
+  border-left: 4px solid var(--accent-3);
+}
+
+.recruiting-panel .recruiting-priority strong {
+  color: var(--accent-3);
+}
+
 .recruiting-panel strong {
   color: var(--accent);
   display: block;
