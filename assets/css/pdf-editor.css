@@ -79,6 +79,66 @@
   margin-top: 16px;
 }
 
+.pdf-image-panel {
+  align-items: center;
+  background: var(--soft-green, #edf8f5);
+  border: 1px dashed rgba(15, 118, 110, 0.32);
+  border-radius: 8px;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) minmax(190px, 260px);
+  margin-top: 10px;
+  padding: 13px 14px;
+}
+
+.pdf-image-upload {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  float: none;
+  gap: 16px;
+  justify-content: space-between;
+  width: auto;
+}
+
+.pdf-image-upload > span,
+.pdf-image-upload strong,
+.pdf-image-upload span {
+  display: block;
+}
+
+.pdf-image-upload strong {
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.pdf-image-upload span span {
+  color: var(--muted, #667085);
+  font-size: 12px;
+}
+
+.pdf-image-upload input {
+  max-width: 240px;
+}
+
+.pdf-image-size label {
+  color: var(--muted, #667085);
+  display: flex;
+  font-size: 11px;
+  font-weight: 700;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.pdf-image-size output {
+  color: var(--accent-2, #0f766e);
+}
+
+.pdf-image-size input {
+  accent-color: var(--accent-2, #0f766e);
+  width: 100%;
+}
+
 .pdf-toolbar {
   align-items: end;
   background: var(--panel-bg, #fff);
@@ -227,6 +287,40 @@
   border-color: var(--accent, #315c96);
 }
 
+.pdf-image-item {
+  border: 1px dashed transparent;
+  box-sizing: border-box;
+  cursor: move;
+  line-height: 0;
+  position: absolute;
+  user-select: none;
+}
+
+.pdf-image-item img {
+  display: block;
+  height: auto;
+  pointer-events: none;
+  width: 100%;
+}
+
+.pdf-image-item:hover,
+.pdf-image-item.selected {
+  border-color: var(--accent-2, #0f766e);
+  box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.12);
+}
+
+.pdf-image-resize {
+  background: var(--accent-2, #0f766e);
+  border: 2px solid #fff;
+  border-radius: 50%;
+  bottom: -7px;
+  cursor: nwse-resize;
+  height: 12px;
+  position: absolute;
+  right: -7px;
+  width: 12px;
+}
+
 .pdf-status {
   color: var(--muted, #667085);
   font-size: 12.5px;
@@ -254,6 +348,15 @@
 
   .pdf-toolbar {
     grid-template-columns: minmax(0, 1fr) 76px 52px;
+  }
+
+  .pdf-image-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .pdf-image-upload {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .pdf-toolbar .pdf-button {
