@@ -375,14 +375,42 @@ permalink: /image-editor.html
       }, [0, 0, 0]).map((value) => value / samples.length);
       const target = state.bgColor.match(/[a-f\d]{2}/gi).map((hex) => parseInt(hex, 16));
       const feather = 35;
+      const visited = new Uint8Array(width * height);
+      const queue = new Int32Array(width * height);
+      let head = 0;
+      let tail = 0;
 
-      for (let index = 0; index < data.length; index += 4) {
+      function enqueue(pixel) {
+        if (pixel < 0 || pixel >= visited.length || visited[pixel]) return;
+        visited[pixel] = 1;
+        const index = pixel * 4;
         const distance = Math.hypot(data[index] - sample[0], data[index + 1] - sample[1], data[index + 2] - sample[2]);
-        if (distance >= state.bgTolerance + feather) continue;
+        if (distance > state.bgTolerance + feather) return;
+        queue[tail++] = pixel;
+      }
+
+      for (let x = 0; x < width; x++) {
+        enqueue(x);
+        enqueue((height - 1) * width + x);
+      }
+      for (let y = 1; y < height - 1; y++) {
+        enqueue(y * width);
+        enqueue(y * width + width - 1);
+      }
+
+      while (head < tail) {
+        const pixel = queue[head++];
+        const index = pixel * 4;
+        const x = pixel % width;
+        const distance = Math.hypot(data[index] - sample[0], data[index + 1] - sample[1], data[index + 2] - sample[2]);
         const mix = distance <= state.bgTolerance ? 1 : 1 - (distance - state.bgTolerance) / feather;
         data[index] = data[index] * (1 - mix) + target[0] * mix;
         data[index + 1] = data[index + 1] * (1 - mix) + target[1] * mix;
         data[index + 2] = data[index + 2] * (1 - mix) + target[2] * mix;
+        if (x > 0) enqueue(pixel - 1);
+        if (x < width - 1) enqueue(pixel + 1);
+        if (pixel >= width) enqueue(pixel - width);
+        if (pixel < width * (height - 1)) enqueue(pixel + width);
       }
       context.putImageData(imageData, 0, 0);
     }

@@ -250,6 +250,7 @@
   float: none;
   font-size: 12px;
   font-weight: 750;
+  white-space: nowrap;
   width: auto;
 }
 
