@@ -107,6 +107,11 @@
   display: block;
 }
 
+.pdf-image-upload > span {
+  flex: 1 1 150px;
+  min-width: 150px;
+}
+
 .pdf-image-upload strong {
   font-size: 14px;
   margin-bottom: 2px;
@@ -118,7 +123,9 @@
 }
 
 .pdf-image-upload input {
-  max-width: 240px;
+  flex: 0 1 190px;
+  max-width: 190px;
+  min-width: 0;
 }
 
 .pdf-image-size label {
