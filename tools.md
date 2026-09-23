@@ -5,11 +5,11 @@ permalink: /tools.html
 ---
 
 <div class="tools-hub">
-  <header class="tools-hero">
+  <div class="tools-hero">
     <span>Browser Utilities</span>
     <h1>Tools</h1>
     <p>轻量、实用的浏览器工具。文件只在本地处理，不上传服务器。</p>
-  </header>
+  </div>
 
   <div class="tools-grid">
     <a class="tool-card" href="{{ '/pdf-editor.html' | relative_url }}">

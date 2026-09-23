@@ -5,11 +5,11 @@ permalink: /image-editor.html
 ---
 
 <div class="image-tool">
-  <header class="image-tool-hero">
+  <div class="image-tool-hero">
     <span>Local Image Utility</span>
     <h1>图像编辑工具</h1>
     <p>上传图片后进行缩放、旋转、翻转和色彩调整，再导出为常用图像格式。所有处理都在浏览器本地完成。</p>
-  </header>
+  </div>
 
   <label class="image-upload" for="image-file">
     <span>
