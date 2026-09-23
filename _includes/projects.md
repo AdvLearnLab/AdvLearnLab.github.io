@@ -72,8 +72,8 @@
   <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
     <div class="title"><a href="https://www.ccf.org.cn/">首届中国科协青年人才托举博士生专项计划</a></div>
     <div class="author"><strong>Principal Investigator: Mengnan Zhao</strong></div>
-    <div class="periodical"><em>2025.01 - 2026.12, 中国计算机学会.</em></div>
-    <div class="pub-rank-badges"><span>Project</span><span>中国科协</span><span>中国计算机学会</span></div>
+    <div class="periodical"><em>2025.01 - 2026.12, 中国计算机学会, 4万元.</em></div>
+    <div class="pub-rank-badges"><span>Project</span><span>中国科协</span><span>中国计算机学会</span><span>RMB 40K</span></div>
   </div>
 </div>
 </li>
