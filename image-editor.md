@@ -20,6 +20,44 @@ permalink: /image-editor.html
   </label>
 
   <section class="image-editor" id="image-editor" hidden>
+    <div class="image-resize-panel">
+      <div class="image-resize-heading">
+        <strong>输出尺寸</strong>
+        <span>精确控制导出图片的像素大小</span>
+      </div>
+      <div class="image-dimension-field">
+        <label for="image-width">宽度 A</label>
+        <div><input id="image-width" type="number" min="1" max="12000" step="1"><span>px</span></div>
+      </div>
+      <span class="image-dimension-times" aria-hidden="true">×</span>
+      <div class="image-dimension-field">
+        <label for="image-height">高度 B</label>
+        <div><input id="image-height" type="number" min="1" max="12000" step="1"><span>px</span></div>
+      </div>
+      <label class="image-ratio-lock"><input id="image-ratio-lock" type="checkbox" checked> 锁定比例</label>
+      <select class="image-select" id="image-fit-mode" aria-label="图片适配方式">
+        <option value="cover">填满并居中裁切</option>
+        <option value="contain">完整显示并留白</option>
+        <option value="stretch">拉伸到指定尺寸</option>
+      </select>
+      <button class="image-button image-button-primary" id="image-apply-size" type="button">应用尺寸</button>
+    </div>
+
+    <div class="image-presets">
+      <label for="image-size-preset">常用证件照</label>
+      <select class="image-select" id="image-size-preset">
+        <option value="">选择尺寸</option>
+        <option value="260x378">小一寸 · 260 × 378 px</option>
+        <option value="295x413">一寸 · 295 × 413 px</option>
+        <option value="390x567">大一寸 / 护照常用 · 390 × 567 px</option>
+        <option value="413x531">小二寸 · 413 × 531 px</option>
+        <option value="413x579">二寸 · 413 × 579 px</option>
+        <option value="413x626">大二寸 · 413 × 626 px</option>
+        <option value="358x441">居民身份证常用 · 358 × 441 px</option>
+      </select>
+      <span>不同报名系统要求可能不同，请以具体通知为准。</span>
+    </div>
+
     <div class="image-toolbar">
       <div class="image-control">
         <label for="image-brightness"><span>亮度</span><output id="brightness-value">100%</output></label>
@@ -92,6 +130,12 @@ permalink: /image-editor.html
       brightnessValue: document.getElementById('brightness-value'),
       contrastValue: document.getElementById('contrast-value'),
       saturationValue: document.getElementById('saturation-value'),
+      width: document.getElementById('image-width'),
+      height: document.getElementById('image-height'),
+      ratioLock: document.getElementById('image-ratio-lock'),
+      fitMode: document.getElementById('image-fit-mode'),
+      applySize: document.getElementById('image-apply-size'),
+      preset: document.getElementById('image-size-preset'),
       rotateLeft: document.getElementById('rotate-left'),
       rotateRight: document.getElementById('rotate-right'),
       flipHorizontal: document.getElementById('flip-horizontal'),
@@ -119,6 +163,9 @@ permalink: /image-editor.html
       contrast: 100,
       saturation: 100,
       grayscale: false,
+      outputWidth: 1,
+      outputHeight: 1,
+      fitMode: 'cover',
       zoom: 1,
       history: []
     };
@@ -132,6 +179,9 @@ permalink: /image-editor.html
         contrast: state.contrast,
         saturation: state.saturation,
         grayscale: state.grayscale,
+        outputWidth: state.outputWidth,
+        outputHeight: state.outputHeight,
+        fitMode: state.fitMode,
         zoom: state.zoom
       };
     }
@@ -160,6 +210,9 @@ permalink: /image-editor.html
       elements.contrastValue.value = `${state.contrast}%`;
       elements.saturationValue.value = `${state.saturation}%`;
       elements.zoomLabel.textContent = `${Math.round(state.zoom * 100)}%`;
+      elements.width.value = state.outputWidth;
+      elements.height.value = state.outputHeight;
+      elements.fitMode.value = state.fitMode;
       elements.grayscale.setAttribute('aria-pressed', String(state.grayscale));
       elements.grayscale.style.borderColor = state.grayscale ? 'var(--accent, #315c96)' : '';
       elements.grayscale.style.color = state.grayscale ? 'var(--accent, #315c96)' : '';
@@ -167,25 +220,46 @@ permalink: /image-editor.html
 
     function render() {
       if (!state.image) return;
-      const quarterTurn = Math.abs(state.rotation % 180) === 90;
       const sourceWidth = state.image.naturalWidth;
       const sourceHeight = state.image.naturalHeight;
-      const width = quarterTurn ? sourceHeight : sourceWidth;
-      const height = quarterTurn ? sourceWidth : sourceHeight;
+      const quarterTurn = Math.abs(state.rotation % 180) === 90;
+      const orientedWidth = quarterTurn ? sourceHeight : sourceWidth;
+      const orientedHeight = quarterTurn ? sourceWidth : sourceHeight;
+      const width = state.outputWidth;
+      const height = state.outputHeight;
       const context = elements.canvas.getContext('2d');
+
+      const sourceCanvas = document.createElement('canvas');
+      sourceCanvas.width = orientedWidth;
+      sourceCanvas.height = orientedHeight;
+      const sourceContext = sourceCanvas.getContext('2d');
+      sourceContext.save();
+      sourceContext.translate(orientedWidth / 2, orientedHeight / 2);
+      sourceContext.rotate(state.rotation * Math.PI / 180);
+      sourceContext.scale(state.flipX, state.flipY);
+      sourceContext.filter = `brightness(${state.brightness}%) contrast(${state.contrast}%) saturate(${state.saturation}%) grayscale(${state.grayscale ? 100 : 0}%)`;
+      sourceContext.drawImage(state.image, -sourceWidth / 2, -sourceHeight / 2);
+      sourceContext.restore();
 
       elements.canvas.width = width;
       elements.canvas.height = height;
       elements.canvas.style.width = `${Math.max(1, Math.round(width * state.zoom))}px`;
       elements.canvas.style.height = `${Math.max(1, Math.round(height * state.zoom))}px`;
       context.clearRect(0, 0, width, height);
-      context.save();
-      context.translate(width / 2, height / 2);
-      context.rotate(state.rotation * Math.PI / 180);
-      context.scale(state.flipX, state.flipY);
-      context.filter = `brightness(${state.brightness}%) contrast(${state.contrast}%) saturate(${state.saturation}%) grayscale(${state.grayscale ? 100 : 0}%)`;
-      context.drawImage(state.image, -sourceWidth / 2, -sourceHeight / 2);
-      context.restore();
+      if (state.fitMode === 'stretch') {
+        context.drawImage(sourceCanvas, 0, 0, width, height);
+      } else {
+        const ratio = state.fitMode === 'cover'
+          ? Math.max(width / orientedWidth, height / orientedHeight)
+          : Math.min(width / orientedWidth, height / orientedHeight);
+        const drawWidth = orientedWidth * ratio;
+        const drawHeight = orientedHeight * ratio;
+        if (state.fitMode === 'contain') {
+          context.fillStyle = '#ffffff';
+          context.fillRect(0, 0, width, height);
+        }
+        context.drawImage(sourceCanvas, (width - drawWidth) / 2, (height - drawHeight) / 2, drawWidth, drawHeight);
+      }
       syncControls();
     }
 
@@ -197,6 +271,9 @@ permalink: /image-editor.html
       state.contrast = 100;
       state.saturation = 100;
       state.grayscale = false;
+      state.outputWidth = state.image ? state.image.naturalWidth : 1;
+      state.outputHeight = state.image ? state.image.naturalHeight : 1;
+      state.fitMode = 'cover';
       state.zoom = 1;
     }
 
@@ -241,6 +318,7 @@ permalink: /image-editor.html
     elements.rotateLeft.addEventListener('click', function () {
       pushHistory();
       state.rotation = (state.rotation - 90) % 360;
+      [state.outputWidth, state.outputHeight] = [state.outputHeight, state.outputWidth];
       render();
       setStatus('图像已向左旋转 90°。');
     });
@@ -248,6 +326,7 @@ permalink: /image-editor.html
     elements.rotateRight.addEventListener('click', function () {
       pushHistory();
       state.rotation = (state.rotation + 90) % 360;
+      [state.outputWidth, state.outputHeight] = [state.outputHeight, state.outputWidth];
       render();
       setStatus('图像已向右旋转 90°。');
     });
@@ -280,6 +359,43 @@ permalink: /image-editor.html
       state.saturation = 112;
       render();
       setStatus('已应用轻度自动增强。');
+    });
+
+    function clampDimension(value) {
+      return Math.min(12000, Math.max(1, Math.round(Number(value) || 1)));
+    }
+
+    elements.width.addEventListener('input', function () {
+      if (!elements.ratioLock.checked || !state.outputWidth) return;
+      elements.height.value = clampDimension(Number(elements.width.value) * state.outputHeight / state.outputWidth);
+    });
+
+    elements.height.addEventListener('input', function () {
+      if (!elements.ratioLock.checked || !state.outputHeight) return;
+      elements.width.value = clampDimension(Number(elements.height.value) * state.outputWidth / state.outputHeight);
+    });
+
+    elements.applySize.addEventListener('click', function () {
+      if (!state.image) return;
+      const width = clampDimension(elements.width.value);
+      const height = clampDimension(elements.height.value);
+      pushHistory();
+      state.outputWidth = width;
+      state.outputHeight = height;
+      state.fitMode = elements.fitMode.value;
+      const availableWidth = Math.min(760, document.querySelector('.image-workspace')?.clientWidth - 48 || 760);
+      state.zoom = Math.min(1, Math.max(0.05, availableWidth / width));
+      render();
+      setStatus(`输出尺寸已设为 ${width} × ${height}px。`);
+    });
+
+    elements.preset.addEventListener('change', function () {
+      if (!elements.preset.value) return;
+      const [width, height] = elements.preset.value.split('x').map(Number);
+      elements.width.value = width;
+      elements.height.value = height;
+      elements.ratioLock.checked = false;
+      elements.applySize.click();
     });
 
     elements.zoomOut.addEventListener('click', function () {
