@@ -29,6 +29,9 @@
   {% if page.permalink == '/pdf-editor.html' %}
   <link rel="stylesheet" href="./assets/css/pdf-editor.css">
   {% endif %}
+  {% if page.permalink == '/tools.html' or page.permalink == '/image-editor.html' %}
+  <link rel="stylesheet" href="./assets/css/tools.css">
+  {% endif %}
 
 </head>
 
@@ -141,14 +144,14 @@
         <a href="{{ '/projects.html' | relative_url }}">项目</a>
         <a href="{{ '/patents.html' | relative_url }}">专利</a>
         <a href="{{ '/students.html' | relative_url }}">学生</a>
-        <a href="{{ '/pdf-editor.html' | relative_url }}">PDF工具</a>
+        <a href="{{ '/tools.html' | relative_url }}">工具</a>
         {% else %}
         <a href="{{ '/' | relative_url }}">Home</a>
         <a href="{{ '/publications.html' | relative_url }}">Publications</a>
         <a href="{{ '/projects.html' | relative_url }}">Projects</a>
         <a href="{{ '/patents.html' | relative_url }}">Patents</a>
         <a href="{{ '/students.html' | relative_url }}">Students</a>
-        <a href="{{ '/pdf-editor.html' | relative_url }}">PDF Tool</a>
+        <a href="{{ '/tools.html' | relative_url }}">Tools</a>
         {% endif %}
       </nav>
 
