@@ -47,15 +47,48 @@ permalink: /image-editor.html
       <label for="image-size-preset">常用证件照</label>
       <select class="image-select" id="image-size-preset">
         <option value="">选择尺寸</option>
-        <option value="260x378">小一寸 · 260 × 378 px</option>
-        <option value="295x413">一寸 · 295 × 413 px</option>
-        <option value="390x567">大一寸 / 护照常用 · 390 × 567 px</option>
-        <option value="413x531">小二寸 · 413 × 531 px</option>
-        <option value="413x579">二寸 · 413 × 579 px</option>
-        <option value="413x626">大二寸 · 413 × 626 px</option>
-        <option value="358x441">居民身份证常用 · 358 × 441 px</option>
+        <optgroup label="通用印刷尺寸（300 dpi 换算）">
+          <option value="260x378">小一寸 22 × 32 mm · 260 × 378 px</option>
+          <option value="295x413">一寸 25 × 35 mm · 295 × 413 px</option>
+          <option value="390x567">大一寸 33 × 48 mm · 390 × 567 px</option>
+          <option value="413x531">小二寸 35 × 45 mm · 413 × 531 px</option>
+          <option value="413x579">二寸 35 × 49 mm · 413 × 579 px</option>
+          <option value="413x626">大二寸 35 × 53 mm · 413 × 626 px</option>
+        </optgroup>
+        <optgroup label="明确用途">
+          <option value="358x441">中国居民身份证 · 358 × 441 px</option>
+          <option value="390x567">中国护照 33 × 48 mm（300 dpi）· 390 × 567 px</option>
+          <option value="600x600">美国签证电子照片 · 600 × 600 px</option>
+          <option value="295x413">职业考试报名常用起点 · 295 × 413 px</option>
+        </optgroup>
       </select>
-      <span>不同报名系统要求可能不同，请以具体通知为准。</span>
+      <span>身份证为公安电子相片规格；其余系统可能另有像素、文件大小和人像位置要求，请以具体通知为准。</span>
+    </div>
+
+    <div class="image-advanced-grid">
+      <div class="image-tool-panel">
+        <div class="image-panel-title"><strong>构图与裁剪</strong><span>仅在“填满并居中裁切”模式下生效</span></div>
+        <div class="image-control">
+          <label for="image-focus-x"><span>水平焦点</span><output id="focus-x-value">50%</output></label>
+          <input id="image-focus-x" type="range" min="0" max="100" value="50">
+        </div>
+        <div class="image-control">
+          <label for="image-focus-y"><span>垂直焦点</span><output id="focus-y-value">50%</output></label>
+          <input id="image-focus-y" type="range" min="0" max="100" value="50">
+        </div>
+      </div>
+
+      <div class="image-tool-panel">
+        <div class="image-panel-title"><strong>证件照背景换色</strong><span>适合原背景接近纯色的照片</span></div>
+        <label class="image-inline-check"><input id="image-bg-enabled" type="checkbox"> 启用换色</label>
+        <div class="image-bg-options">
+          <label for="image-bg-color">目标颜色</label>
+          <input id="image-bg-color" type="color" value="#ffffff">
+          <label for="image-bg-tolerance">容差</label>
+          <input id="image-bg-tolerance" type="range" min="10" max="180" value="65">
+          <output id="bg-tolerance-value">65</output>
+        </div>
+      </div>
     </div>
 
     <div class="image-toolbar">
@@ -71,6 +104,23 @@ permalink: /image-editor.html
         <label for="image-saturation"><span>饱和度</span><output id="saturation-value">100%</output></label>
         <input id="image-saturation" type="range" min="0" max="200" value="100">
       </div>
+    </div>
+
+    <div class="image-watermark-panel">
+      <div class="image-panel-title"><strong>文字水印</strong><span>留空即不添加</span></div>
+      <input id="image-watermark-text" type="text" maxlength="80" placeholder="输入水印文字">
+      <input id="image-watermark-color" type="color" value="#ffffff" aria-label="水印颜色">
+      <div class="image-watermark-opacity">
+        <label for="image-watermark-opacity">透明度 <output id="watermark-opacity-value">55%</output></label>
+        <input id="image-watermark-opacity" type="range" min="10" max="100" value="55">
+      </div>
+      <select class="image-select" id="image-watermark-position" aria-label="水印位置">
+        <option value="bottom-right">右下角</option>
+        <option value="bottom-left">左下角</option>
+        <option value="top-right">右上角</option>
+        <option value="top-left">左上角</option>
+        <option value="center">居中</option>
+      </select>
     </div>
 
     <div class="image-actions">
@@ -107,6 +157,7 @@ permalink: /image-editor.html
           <option value="0.8">标准质量</option>
           <option value="0.65">较小文件</option>
         </select>
+        <label class="image-target-size" for="image-target-kb">目标大小 <input id="image-target-kb" type="number" min="10" max="5000" step="10" placeholder="不限"><span>KB</span></label>
       </div>
       <button class="image-button image-button-primary" id="image-export" type="button">导出图片</button>
     </div>
@@ -130,6 +181,19 @@ permalink: /image-editor.html
       brightnessValue: document.getElementById('brightness-value'),
       contrastValue: document.getElementById('contrast-value'),
       saturationValue: document.getElementById('saturation-value'),
+      focusX: document.getElementById('image-focus-x'),
+      focusY: document.getElementById('image-focus-y'),
+      focusXValue: document.getElementById('focus-x-value'),
+      focusYValue: document.getElementById('focus-y-value'),
+      bgEnabled: document.getElementById('image-bg-enabled'),
+      bgColor: document.getElementById('image-bg-color'),
+      bgTolerance: document.getElementById('image-bg-tolerance'),
+      bgToleranceValue: document.getElementById('bg-tolerance-value'),
+      watermarkText: document.getElementById('image-watermark-text'),
+      watermarkColor: document.getElementById('image-watermark-color'),
+      watermarkOpacity: document.getElementById('image-watermark-opacity'),
+      watermarkOpacityValue: document.getElementById('watermark-opacity-value'),
+      watermarkPosition: document.getElementById('image-watermark-position'),
       width: document.getElementById('image-width'),
       height: document.getElementById('image-height'),
       ratioLock: document.getElementById('image-ratio-lock'),
@@ -149,6 +213,7 @@ permalink: /image-editor.html
       reset: document.getElementById('image-reset'),
       format: document.getElementById('image-format'),
       quality: document.getElementById('image-quality'),
+      targetKb: document.getElementById('image-target-kb'),
       export: document.getElementById('image-export'),
       status: document.getElementById('image-status')
     };
@@ -163,6 +228,15 @@ permalink: /image-editor.html
       contrast: 100,
       saturation: 100,
       grayscale: false,
+      focusX: 50,
+      focusY: 50,
+      bgEnabled: false,
+      bgColor: '#ffffff',
+      bgTolerance: 65,
+      watermarkText: '',
+      watermarkColor: '#ffffff',
+      watermarkOpacity: 55,
+      watermarkPosition: 'bottom-right',
       outputWidth: 1,
       outputHeight: 1,
       fitMode: 'cover',
@@ -179,6 +253,15 @@ permalink: /image-editor.html
         contrast: state.contrast,
         saturation: state.saturation,
         grayscale: state.grayscale,
+        focusX: state.focusX,
+        focusY: state.focusY,
+        bgEnabled: state.bgEnabled,
+        bgColor: state.bgColor,
+        bgTolerance: state.bgTolerance,
+        watermarkText: state.watermarkText,
+        watermarkColor: state.watermarkColor,
+        watermarkOpacity: state.watermarkOpacity,
+        watermarkPosition: state.watermarkPosition,
         outputWidth: state.outputWidth,
         outputHeight: state.outputHeight,
         fitMode: state.fitMode,
@@ -209,6 +292,19 @@ permalink: /image-editor.html
       elements.brightnessValue.value = `${state.brightness}%`;
       elements.contrastValue.value = `${state.contrast}%`;
       elements.saturationValue.value = `${state.saturation}%`;
+      elements.focusX.value = state.focusX;
+      elements.focusY.value = state.focusY;
+      elements.focusXValue.value = `${state.focusX}%`;
+      elements.focusYValue.value = `${state.focusY}%`;
+      elements.bgEnabled.checked = state.bgEnabled;
+      elements.bgColor.value = state.bgColor;
+      elements.bgTolerance.value = state.bgTolerance;
+      elements.bgToleranceValue.value = state.bgTolerance;
+      elements.watermarkText.value = state.watermarkText;
+      elements.watermarkColor.value = state.watermarkColor;
+      elements.watermarkOpacity.value = state.watermarkOpacity;
+      elements.watermarkOpacityValue.value = `${state.watermarkOpacity}%`;
+      elements.watermarkPosition.value = state.watermarkPosition;
       elements.zoomLabel.textContent = `${Math.round(state.zoom * 100)}%`;
       elements.width.value = state.outputWidth;
       elements.height.value = state.outputHeight;
@@ -258,9 +354,60 @@ permalink: /image-editor.html
           context.fillStyle = '#ffffff';
           context.fillRect(0, 0, width, height);
         }
-        context.drawImage(sourceCanvas, (width - drawWidth) / 2, (height - drawHeight) / 2, drawWidth, drawHeight);
+        const overflowX = Math.max(0, drawWidth - width);
+        const overflowY = Math.max(0, drawHeight - height);
+        const drawX = state.fitMode === 'cover' ? -overflowX * state.focusX / 100 : (width - drawWidth) / 2;
+        const drawY = state.fitMode === 'cover' ? -overflowY * state.focusY / 100 : (height - drawHeight) / 2;
+        context.drawImage(sourceCanvas, drawX, drawY, drawWidth, drawHeight);
       }
+      if (state.bgEnabled) replaceBackground(context, width, height);
+      drawWatermark(context, width, height);
       syncControls();
+    }
+
+    function replaceBackground(context, width, height) {
+      const imageData = context.getImageData(0, 0, width, height);
+      const data = imageData.data;
+      const samples = [[2, 2], [width - 3, 2], [2, height - 3], [width - 3, height - 3]];
+      const sample = samples.reduce((sum, point) => {
+        const index = (Math.max(0, point[1]) * width + Math.max(0, point[0])) * 4;
+        return [sum[0] + data[index], sum[1] + data[index + 1], sum[2] + data[index + 2]];
+      }, [0, 0, 0]).map((value) => value / samples.length);
+      const target = state.bgColor.match(/[a-f\d]{2}/gi).map((hex) => parseInt(hex, 16));
+      const feather = 35;
+
+      for (let index = 0; index < data.length; index += 4) {
+        const distance = Math.hypot(data[index] - sample[0], data[index + 1] - sample[1], data[index + 2] - sample[2]);
+        if (distance >= state.bgTolerance + feather) continue;
+        const mix = distance <= state.bgTolerance ? 1 : 1 - (distance - state.bgTolerance) / feather;
+        data[index] = data[index] * (1 - mix) + target[0] * mix;
+        data[index + 1] = data[index + 1] * (1 - mix) + target[1] * mix;
+        data[index + 2] = data[index + 2] * (1 - mix) + target[2] * mix;
+      }
+      context.putImageData(imageData, 0, 0);
+    }
+
+    function drawWatermark(context, width, height) {
+      const text = state.watermarkText.trim();
+      if (!text) return;
+      const fontSize = Math.max(12, Math.round(Math.min(width, height) * 0.055));
+      const padding = Math.max(10, Math.round(fontSize * 0.7));
+      context.save();
+      context.globalAlpha = state.watermarkOpacity / 100;
+      context.fillStyle = state.watermarkColor;
+      context.font = `600 ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+      context.textBaseline = 'middle';
+      const textWidth = context.measureText(text).width;
+      const positions = {
+        'top-left': [padding, padding + fontSize / 2],
+        'top-right': [width - padding - textWidth, padding + fontSize / 2],
+        'bottom-left': [padding, height - padding - fontSize / 2],
+        'bottom-right': [width - padding - textWidth, height - padding - fontSize / 2],
+        center: [(width - textWidth) / 2, height / 2]
+      };
+      const [x, y] = positions[state.watermarkPosition] || positions['bottom-right'];
+      context.fillText(text, Math.max(padding, x), y);
+      context.restore();
     }
 
     function resetSettings() {
@@ -271,6 +418,15 @@ permalink: /image-editor.html
       state.contrast = 100;
       state.saturation = 100;
       state.grayscale = false;
+      state.focusX = 50;
+      state.focusY = 50;
+      state.bgEnabled = false;
+      state.bgColor = '#ffffff';
+      state.bgTolerance = 65;
+      state.watermarkText = '';
+      state.watermarkColor = '#ffffff';
+      state.watermarkOpacity = 55;
+      state.watermarkPosition = 'bottom-right';
       state.outputWidth = state.image ? state.image.naturalWidth : 1;
       state.outputHeight = state.image ? state.image.naturalHeight : 1;
       state.fitMode = 'cover';
@@ -313,6 +469,64 @@ permalink: /image-editor.html
         render();
         setStatus('图像参数已更新。');
       });
+    });
+
+    [['focusX', elements.focusX, elements.focusXValue], ['focusY', elements.focusY, elements.focusYValue]].forEach(function ([key, input, output]) {
+      input.addEventListener('pointerdown', pushHistory);
+      input.addEventListener('input', function () {
+        state[key] = Number(input.value);
+        output.value = `${input.value}%`;
+        render();
+        setStatus('裁剪焦点已更新。');
+      });
+    });
+
+    elements.bgEnabled.addEventListener('change', function () {
+      pushHistory();
+      state.bgEnabled = elements.bgEnabled.checked;
+      render();
+      setStatus(state.bgEnabled ? '纯色背景换色已启用。' : '背景换色已关闭。');
+    });
+
+    elements.bgColor.addEventListener('change', function () {
+      pushHistory();
+      state.bgColor = elements.bgColor.value;
+      render();
+      setStatus('证件照背景颜色已更新。');
+    });
+
+    elements.bgTolerance.addEventListener('pointerdown', pushHistory);
+    elements.bgTolerance.addEventListener('input', function () {
+      state.bgTolerance = Number(elements.bgTolerance.value);
+      elements.bgToleranceValue.value = state.bgTolerance;
+      render();
+      setStatus('背景识别容差已更新。');
+    });
+
+    elements.watermarkText.addEventListener('focus', pushHistory);
+    elements.watermarkText.addEventListener('input', function () {
+      state.watermarkText = elements.watermarkText.value;
+      render();
+      setStatus(state.watermarkText.trim() ? '文字水印已更新。' : '文字水印已清除。');
+    });
+
+    elements.watermarkColor.addEventListener('change', function () {
+      pushHistory();
+      state.watermarkColor = elements.watermarkColor.value;
+      render();
+    });
+
+    elements.watermarkOpacity.addEventListener('pointerdown', pushHistory);
+    elements.watermarkOpacity.addEventListener('input', function () {
+      state.watermarkOpacity = Number(elements.watermarkOpacity.value);
+      elements.watermarkOpacityValue.value = `${state.watermarkOpacity}%`;
+      render();
+    });
+
+    elements.watermarkPosition.addEventListener('change', function () {
+      pushHistory();
+      state.watermarkPosition = elements.watermarkPosition.value;
+      render();
     });
 
     elements.rotateLeft.addEventListener('click', function () {
@@ -423,12 +637,43 @@ permalink: /image-editor.html
       setStatus('图像已恢复到初始状态。');
     });
 
-    elements.export.addEventListener('click', function () {
+    function canvasToBlob(mimeType, quality) {
+      return new Promise((resolve) => elements.canvas.toBlob(resolve, mimeType, quality));
+    }
+
+    async function createExportBlob(mimeType, quality, targetBytes) {
+      if (!targetBytes || mimeType === 'image/png') return canvasToBlob(mimeType, quality);
+      let low = 0.08;
+      let high = Math.min(0.98, quality);
+      let best = await canvasToBlob(mimeType, low);
+      for (let attempt = 0; attempt < 8; attempt++) {
+        const candidateQuality = (low + high) / 2;
+        const candidate = await canvasToBlob(mimeType, candidateQuality);
+        if (!candidate) break;
+        if (candidate.size <= targetBytes) {
+          best = candidate;
+          low = candidateQuality;
+        } else {
+          high = candidateQuality;
+        }
+      }
+      return best;
+    }
+
+    elements.export.addEventListener('click', async function () {
       if (!state.image) return;
       const mimeType = elements.format.value;
       const quality = Number(elements.quality.value);
       const extension = mimeType === 'image/jpeg' ? 'jpg' : mimeType.split('/')[1];
-      elements.canvas.toBlob(function (blob) {
+      const targetKb = Math.max(0, Number(elements.targetKb.value) || 0);
+      if (targetKb && mimeType === 'image/png') {
+        setStatus('PNG 为无损格式，目标 KB 仅对 JPEG 和 WebP 生效。');
+        return;
+      }
+      elements.export.disabled = true;
+      elements.export.textContent = '正在导出...';
+      try {
+        const blob = await createExportBlob(mimeType, quality, targetKb * 1024);
         if (!blob) {
           setStatus('导出失败，请重试。');
           return;
@@ -439,8 +684,13 @@ permalink: /image-editor.html
         link.download = `${state.fileName}-edited.${extension}`;
         link.click();
         setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
-        setStatus(`导出完成 · ${elements.canvas.width} × ${elements.canvas.height}px`);
-      }, mimeType, quality);
+        const actualKb = Math.max(1, Math.round(blob.size / 1024));
+        const targetNote = targetKb && blob.size > targetKb * 1024 ? ' · 已使用最低质量，仍高于目标大小' : '';
+        setStatus(`导出完成 · ${elements.canvas.width} × ${elements.canvas.height}px · ${actualKb} KB${targetNote}`);
+      } finally {
+        elements.export.disabled = false;
+        elements.export.textContent = '导出图片';
+      }
     });
 
     window.addEventListener('keydown', function (event) {
