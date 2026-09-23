@@ -29,5 +29,14 @@ permalink: /tools.html
         <span class="tool-link">打开工具 →</span>
       </div>
     </a>
+
+    <a class="tool-card" href="{{ '/formula-extractor.html' | relative_url }}">
+      <span class="tool-mark tool-mark-formula">LaTeX</span>
+      <div>
+        <h2>公式转 LaTeX</h2>
+        <p>从 Word、PDF、公式截图中提取公式，预览并复制 LaTeX。</p>
+        <span class="tool-link">打开工具 →</span>
+      </div>
+    </a>
   </div>
 </div>
