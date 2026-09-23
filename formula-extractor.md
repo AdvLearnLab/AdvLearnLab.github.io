@@ -246,15 +246,24 @@ permalink: /formula-extractor.html
   async function loadRecognizer() {
     if (state.recognizer) return state.recognizer;
     setProgress('加载公式识别模型', 2, '首次使用需下载浏览器模型，请保持页面打开...');
-    const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.2/+esm');
+    const { pipeline, env, ModelRegistry } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.2/+esm');
     env.allowLocalModels = false;
+    let dtype = 'int8';
+    try {
+      const available = await ModelRegistry.get_available_dtypes('Ji-Ha/TexTeller3-ONNX-dynamic');
+      dtype = ['q4', 'int8', 'q8', 'fp16', 'fp32'].find((item) => available.includes(item)) || dtype;
+    } catch (error) {
+      console.info('Using the broadly supported int8 formula model.', error);
+    }
     state.recognizer = await pipeline('image-to-text', 'Ji-Ha/TexTeller3-ONNX-dynamic', {
-      device: navigator.gpu ? 'webgpu' : 'wasm',
+      device: 'wasm',
+      dtype,
       progress_callback: (progress) => {
         const percent = progress.progress || (progress.loaded && progress.total ? progress.loaded / progress.total * 100 : 4);
-        setProgress('加载公式识别模型', percent, progress.file ? `正在加载 ${progress.file}` : '正在准备模型...');
+        setProgress('加载公式识别模型', Math.min(92, 4 + percent * 0.88), progress.file ? `正在加载 ${progress.file}` : '正在准备模型...');
       }
     });
+    setProgress('加载公式识别模型', 96, '模型已就绪，正在解析公式...');
     return state.recognizer;
   }
 

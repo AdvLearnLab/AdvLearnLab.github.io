@@ -245,6 +245,14 @@
   padding: 0 2px 15px;
 }
 
+.formula-empty[hidden],
+.formula-results[hidden],
+.formula-preview[hidden],
+.formula-progress[hidden],
+.formula-source[hidden] {
+  display: none;
+}
+
 .formula-empty strong {
   color: var(--ink, #172033);
   white-space: nowrap;
