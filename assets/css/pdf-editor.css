@@ -39,7 +39,15 @@
   display: flex;
   justify-content: space-between;
   gap: 18px;
+  float: none;
   padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pdf-upload > span {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .pdf-upload strong,
@@ -58,6 +66,7 @@
 }
 
 .pdf-upload input {
+  flex: 0 1 250px;
   max-width: 250px;
 }
 
