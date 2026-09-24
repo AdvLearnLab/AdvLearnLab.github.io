@@ -39,10 +39,13 @@
   {% if page.permalink == '/admissions-registry.html' or page.permalink == '/my-admissions.html' %}
   <link rel="stylesheet" href="./assets/css/admissions-registry.css?v=20260924-7">
   {% endif %}
+  {% if page.permalink == '/tools.html' or page.permalink == '/pdf-editor.html' or page.permalink == '/image-editor.html' or page.permalink == '/formula-extractor.html' or page.permalink == '/admissions-registry.html' or page.permalink == '/my-admissions.html' %}
+  <link rel="stylesheet" href="./assets/css/standalone-tools.css?v=20260924-1">
+  {% endif %}
 
 </head>
 
-<body{% if page.permalink == '/admissions-registry.html' or page.permalink == '/my-admissions.html' %} class="standalone-registry-page"{% endif %}>
+<body{% if page.permalink == '/tools.html' or page.permalink == '/pdf-editor.html' or page.permalink == '/image-editor.html' or page.permalink == '/formula-extractor.html' or page.permalink == '/admissions-registry.html' or page.permalink == '/my-admissions.html' %} class="standalone-tool-page{% if page.permalink == '/admissions-registry.html' or page.permalink == '/my-admissions.html' %} standalone-registry-page{% endif %}"{% endif %}>
   <div class="wrapper">
     <header>
 
@@ -165,6 +168,13 @@
     </header>
     <main class="content-shell">
       <section class="content-panel">
+
+      {% if page.permalink == '/tools.html' or page.permalink == '/pdf-editor.html' or page.permalink == '/image-editor.html' or page.permalink == '/formula-extractor.html' %}
+      <nav class="standalone-tool-nav" aria-label="Tool navigation">
+        <a href="{{ '/' | relative_url }}">首页</a>
+        <a href="{{ '/tools.html' | relative_url }}"{% if page.permalink == '/tools.html' %} class="active"{% endif %}>Tools</a>
+      </nav>
+      {% endif %}
 
       {{ content }}
 

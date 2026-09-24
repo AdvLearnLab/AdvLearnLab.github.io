@@ -1,0 +1,48 @@
+body.standalone-tool-page .wrapper {
+  display: block;
+  max-width: 1120px;
+  width: min(calc(100% - 40px), 1120px);
+}
+
+body.standalone-tool-page .wrapper > header {
+  display: none;
+}
+
+body.standalone-tool-page .content-shell,
+body.standalone-tool-page .content-panel {
+  float: none;
+  margin: 0;
+  max-width: none;
+  padding: 0;
+  width: 100%;
+}
+
+.standalone-tool-nav {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 12px;
+}
+
+.standalone-tool-nav a {
+  border: 1px solid var(--line, #dfe4ea);
+  border-radius: 6px;
+  color: var(--muted, #667085);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 9px;
+  text-decoration: none;
+}
+
+.standalone-tool-nav a.active {
+  background: var(--accent, #315c96);
+  border-color: var(--accent, #315c96);
+  color: #fff;
+}
+
+@media screen and (max-width: 560px) {
+  body.standalone-tool-page .wrapper {
+    width: min(calc(100% - 24px), 1120px);
+  }
+}
