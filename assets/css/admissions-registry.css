@@ -5,7 +5,7 @@
 .registry-hero p, .registry-note, .registry-empty { color: var(--muted, #667085); }
 .registry-hero p { margin: 0; max-width: 800px; }
 .registry-layout { align-items: start; display: grid; gap: 18px; grid-template-columns: minmax(280px, .8fr) minmax(0, 1.6fr); }
-.registry-panel { background: var(--panel-bg, #fff); border: 1px solid var(--line, #dfe4ea); border-radius: 8px; padding: 16px; }
+.registry-panel { background: var(--panel-bg, #fff); border: 1px solid var(--line, #dfe4ea); border-radius: 8px; box-sizing: border-box; float: none; min-width: 0; padding: 16px; width: auto; }
 .registry-panel h2 { font-size: 18px; margin: 0 0 4px; }
 .registry-note { font-size: 12.5px; line-height: 1.55; margin: 0 0 14px; }
 .registry-form-grid { display: grid; gap: 11px; grid-template-columns: 1fr 1fr; }
