@@ -60,6 +60,7 @@ permalink: /admissions-registry.html
   const yearFilter = document.querySelector('#registry-year-filter');
   const filter = document.querySelector('#registry-filter');
   let entries = [];
+  let autoChecks = 0;
   const clean = (value) => String(value || '').replace(/[\r\n|]/g, ' ').trim();
   const escapeHtml = (value) => clean(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 
@@ -103,10 +104,14 @@ permalink: /admissions-registry.html
     list.innerHTML = '<div class="registry-loading">正在读取公开登记...</div>';
     try {
       const dataUrl = 'https://advlearnlab.github.io/assets/data/admissions-registry.json';
-      const response = await fetch(dataUrl);
+      const response = await fetch(dataUrl, { cache: 'no-cache' });
       if (!response.ok) throw new Error(`Registry data ${response.status}`);
       entries = await response.json();
       render();
+      if (!entries.length && autoChecks < 3) {
+        autoChecks += 1;
+        window.setTimeout(loadEntries, 20000);
+      }
     } catch (error) {
       list.innerHTML = '<div class="registry-empty">公开登记暂时读取失败，请稍后刷新。</div>';
       console.error(error);
