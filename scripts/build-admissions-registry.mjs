@@ -29,7 +29,7 @@ const entries = issues.flatMap((issue) => {
     supervisorName: bodyValue(issue.body, '导师姓名'),
     supervisorSchool: bodyValue(issue.body, '导师学校') || legacySupervisorUnit,
     supervisorProgram: bodyValue(issue.body, '导师学院/专业') || '未填写',
-    status: bodyValue(issue.body, '当前状态') || bodyValue(issue.body, '导师状态') || bodyValue(issue.body, '考生状态') || legacyStatus || '未填写',
+    status: bodyValue(issue.body, '互选状态') || bodyValue(issue.body, '当前状态') || bodyValue(issue.body, '导师状态') || bodyValue(issue.body, '考生状态') || legacyStatus || '未填写',
     applicationYear: bodyValue(issue.body, '申请年份'),
     updated: issue.updated_at,
     url: issue.html_url,

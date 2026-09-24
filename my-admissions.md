@@ -31,7 +31,7 @@ permalink: /my-admissions.html
     <section class="registry-panel registry-account-panel">
       <span class="registry-step">03</span>
       <h2>修改或下架</h2>
-      <p>进入记录后可编辑当前状态、年份及基本信息。登记会长期保留，提交者不能删除；即使关闭 Issue，记录仍保存在登记数据库中。</p>
+      <p>进入记录后可编辑互选状态、年份及基本信息。登记会长期保留，提交者不能删除；即使关闭 Issue，记录仍保存在登记数据库中。</p>
       <p class="registry-account-hint">如遇冒名、错误登记或隐私争议，请在原记录中留言，由仓库管理员核验处理。</p>
     </section>
   </div>

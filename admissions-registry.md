@@ -30,18 +30,18 @@ permalink: /admissions-registry.html
           <div class="registry-field"><label for="supervisor-program">导师学院 / 专业</label><input id="supervisor-program" maxlength="80" placeholder="例如：计算机科学与技术学院 / 计算机科学与技术" required></div>
         </fieldset>
         <div class="registry-field registry-span-2"><label for="application-year">申请年份</label><select id="application-year" required><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option></select></div>
-        <div class="registry-field registry-span-2"><label for="registry-status">当前状态</label><select id="registry-status" required><option>沟通中</option><option>导师已同意接收</option><option>正式确认接收</option><option>双方已取消</option><option>暂时失联</option></select></div>
+        <div class="registry-field registry-span-2"><label for="registry-status">互选状态</label><select id="registry-status" required><option>沟通中</option><option>导师已同意接收</option><option>正式确认接收</option><option>双方已取消</option><option>暂时失联</option></select></div>
         <label class="registry-consent registry-span-2"><input id="registry-consent" type="checkbox" required><span>我确认上述信息真实，并已获得公开姓名、单位及沟通状态所需的授权；如状态变化，我会及时更新或申请删除。</span></label>
         <button class="registry-submit registry-span-2" type="submit">任何人均可登记 · 确认提交</button>
       </form>
-      <div class="registry-guidelines"><strong>登记原则</strong><br>登记将长期保留，提交者不能删除或通过关闭记录将其下架，但可以编辑当前状态及基本信息。“暂时失联”只表示当前无法取得联系，不代表对任何一方作出评价。</div>
+      <div class="registry-guidelines"><strong>登记原则</strong><br>登记将长期保留，提交者不能删除或通过关闭记录将其下架，但可以编辑互选状态及基本信息。“暂时失联”只表示当前无法取得联系，不代表对任何一方作出评价。</div>
     </section>
 
     <section class="registry-panel">
       <h2>公开登记</h2>
       <p class="registry-note">数据来自公开 GitHub 记录，提交或修改后通常会在数分钟内同步。可按姓名或单位搜索，并按当前状态筛选。</p>
       <div class="registry-toolbar">
-        <div class="registry-search"><input id="registry-query" type="search" placeholder="搜索姓名、学校、学院或专业"><select id="registry-year-filter" aria-label="按申请年份筛选"><option value="">全部年份</option><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option></select><select id="registry-filter" aria-label="按状态筛选"><option value="">全部状态</option><option>沟通中</option><option>导师已同意接收</option><option>正式确认接收</option><option>双方已取消</option><option>暂时失联</option></select></div>
+        <div class="registry-search"><input id="registry-query" type="search" placeholder="搜索姓名、学校、学院或专业"><select id="registry-year-filter" aria-label="按申请年份筛选"><option value="">全部年份</option><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option></select><select id="registry-filter" aria-label="按互选状态筛选"><option value="">全部互选状态</option><option>沟通中</option><option>导师已同意接收</option><option>正式确认接收</option><option>双方已取消</option><option>暂时失联</option></select></div>
         <button id="registry-search-button" class="registry-refresh" type="button">搜索</button>
       </div>
       <div id="registry-list" class="registry-list" aria-live="polite"><div class="registry-loading">正在读取公开登记...</div></div>
@@ -133,7 +133,7 @@ permalink: /admissions-registry.html
     event.preventDefault();
     const values = Object.fromEntries(Object.entries(fields).map(([key, input]) => [key, clean(input.value)]));
     const title = `[招生登记] ${values.applicationYear} / ${values.candidateName} / ${values.supervisorName}`;
-    const body = `${MARKER}\n考生姓名：${values.candidateName}\n考生学校：${values.candidateSchool}\n考生学院/专业：${values.candidateProgram}\n导师姓名：${values.supervisorName}\n导师学校：${values.supervisorSchool}\n导师学院/专业：${values.supervisorProgram}\n申请年份：${values.applicationYear}\n当前状态：${values.status}\n\n> 本人确认信息真实并同意按页面登记原则公开。登记将长期保留，不接受提交者删除；当前状态及基本信息可以通过编辑本记录进行更新。`;
+    const body = `${MARKER}\n考生姓名：${values.candidateName}\n考生学校：${values.candidateSchool}\n考生学院/专业：${values.candidateProgram}\n导师姓名：${values.supervisorName}\n导师学校：${values.supervisorSchool}\n导师学院/专业：${values.supervisorProgram}\n申请年份：${values.applicationYear}\n互选状态：${values.status}\n\n> 本人确认信息真实并同意按页面登记原则公开。登记将长期保留，不接受提交者删除；互选状态及基本信息可以通过编辑本记录进行更新。`;
     window.open(`https://github.com/${REPO}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`, '_blank', 'noopener');
   });
   document.querySelector('#registry-search-button').addEventListener('click', () => {
