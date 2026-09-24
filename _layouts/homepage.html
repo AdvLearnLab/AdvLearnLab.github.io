@@ -45,8 +45,13 @@
 
 </head>
 
-<body{% if page.permalink == '/tools.html' or page.permalink == '/pdf-editor.html' or page.permalink == '/image-editor.html' or page.permalink == '/formula-extractor.html' or page.permalink == '/admissions-registry.html' or page.permalink == '/my-admissions.html' %} class="standalone-tool-page{% if page.permalink == '/admissions-registry.html' or page.permalink == '/my-admissions.html' %} standalone-registry-page{% endif %}"{% endif %}>
+{% assign standalone_tool_page = false %}
+{% if page.permalink == '/tools.html' or page.permalink == '/pdf-editor.html' or page.permalink == '/image-editor.html' or page.permalink == '/formula-extractor.html' or page.permalink == '/admissions-registry.html' or page.permalink == '/my-admissions.html' %}
+{% assign standalone_tool_page = true %}
+{% endif %}
+<body{% if standalone_tool_page %} class="standalone-tool-page{% if page.permalink == '/admissions-registry.html' or page.permalink == '/my-admissions.html' %} standalone-registry-page{% endif %}"{% endif %}>
   <div class="wrapper">
+    {% unless standalone_tool_page %}
     <header>
 
       {% if site.avatar %}
@@ -166,6 +171,7 @@
       </nav>
 
     </header>
+    {% endunless %}
     <main class="content-shell">
       <section class="content-panel">
 
