@@ -18,9 +18,9 @@ permalink: /admissions-registry.html
       <p class="registry-note">任何人均可提交，无需联系管理员。提交时只需登录或免费注册 GitHub 账号，用于确认提交者身份并方便本人后续修改或下架记录。</p>
       <form id="registry-form" class="registry-form-grid">
         <div class="registry-field"><label for="candidate-name">考生姓名</label><input id="candidate-name" maxlength="30" required autocomplete="name"></div>
-        <div class="registry-field"><label for="candidate-unit">考生单位</label><input id="candidate-unit" maxlength="80" required></div>
+        <div class="registry-field"><label for="candidate-unit">考生单位（学校 + 学院）</label><input id="candidate-unit" maxlength="100" placeholder="例如：安徽大学 计算机科学与技术学院" required></div>
         <div class="registry-field"><label for="supervisor-name">导师姓名</label><input id="supervisor-name" maxlength="30" required></div>
-        <div class="registry-field"><label for="supervisor-unit">导师单位</label><input id="supervisor-unit" maxlength="80" required></div>
+        <div class="registry-field"><label for="supervisor-unit">导师单位（学校 + 学院）</label><input id="supervisor-unit" maxlength="100" placeholder="例如：安徽大学 计算机科学与技术学院" required></div>
         <div class="registry-field registry-span-2"><label for="application-year">申请年份</label><select id="application-year" required><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option></select></div>
         <div class="registry-field registry-span-2">
           <label for="registry-status">当前状态</label>
@@ -125,6 +125,11 @@ permalink: /admissions-registry.html
   document.querySelector('#registry-form').addEventListener('submit', (event) => {
     event.preventDefault();
     const values = Object.fromEntries(Object.entries(fields).map(([key, input]) => [key, clean(input.value)]));
+    const hasSubUnit = (value) => /(学院|学部|系|研究院|研究所|实验室|中心)/.test(value);
+    if (!hasSubUnit(values.candidateUnit) || !hasSubUnit(values.supervisorUnit)) {
+      window.alert('考生单位和导师单位都需要写明学校及二级单位，例如“安徽大学 计算机科学与技术学院”。');
+      return;
+    }
     const title = `[招生登记] ${values.applicationYear} / ${values.candidateName} / ${values.supervisorName} / ${values.status}`;
     const body = `${MARKER}\n考生姓名：${values.candidateName}\n考生单位：${values.candidateUnit}\n导师姓名：${values.supervisorName}\n导师单位：${values.supervisorUnit}\n申请年份：${values.applicationYear}\n当前状态：${values.status}\n\n> 本人确认信息真实并同意按页面登记原则公开。状态变化后请编辑本记录；关闭本 Issue 后，记录将从公开登记中下架。`;
     window.open(`https://github.com/${REPO}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`, '_blank', 'noopener');
