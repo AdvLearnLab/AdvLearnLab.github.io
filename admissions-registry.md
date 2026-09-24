@@ -34,7 +34,7 @@ permalink: /admissions-registry.html
 
     <section class="registry-panel">
       <h2>公开登记</h2>
-      <p class="registry-note">数据来自公开 GitHub 记录。可按姓名或单位搜索，并按当前状态筛选。</p>
+      <p class="registry-note">数据来自公开 GitHub 记录，提交或修改后通常会在数分钟内同步。可按姓名或单位搜索，并按当前状态筛选。</p>
       <div class="registry-toolbar">
         <div class="registry-search"><input id="registry-query" type="search" placeholder="搜索姓名或单位"><select id="registry-filter" aria-label="按状态筛选"><option value="">全部状态</option><option>沟通中</option><option>导师已同意接收</option><option>正式确认接收</option><option>双方已取消</option><option>失联待核实</option></select></div>
         <button id="registry-refresh" class="registry-refresh" type="button" title="刷新公开登记">刷新</button>
@@ -98,9 +98,10 @@ permalink: /admissions-registry.html
   async function loadEntries() {
     list.innerHTML = '<div class="registry-loading">正在读取公开登记...</div>';
     try {
-      const response = await fetch(`https://api.github.com/repos/${REPO}/issues?state=all&per_page=100&sort=updated&direction=desc`, { headers: { Accept: 'application/vnd.github+json' } });
-      if (!response.ok) throw new Error(`GitHub API ${response.status}`);
-      entries = (await response.json()).map(parseIssue).filter(Boolean);
+      const dataUrl = 'https://advlearnlab.github.io/assets/data/admissions-registry.json';
+      const response = await fetch(`${dataUrl}?v=${Date.now()}`, { cache: 'no-store' });
+      if (!response.ok) throw new Error(`Registry data ${response.status}`);
+      entries = await response.json();
       render();
     } catch (error) {
       list.innerHTML = '<div class="registry-empty">公开登记暂时读取失败，请稍后刷新。</div>';
