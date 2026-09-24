@@ -87,6 +87,10 @@ permalink: /admissions-registry.html
     const keyword = clean(query.value).toLowerCase();
     const year = yearFilter.value;
     const status = filter.value;
+    if (!keyword && !year) {
+      list.innerHTML = '<div class="registry-empty">请输入姓名、单位，或选择申请年份后查询。</div>';
+      return;
+    }
     const visible = entries.filter((item) => {
       const haystack = `${item.candidateName} ${item.candidateUnit} ${item.supervisorName} ${item.supervisorUnit}`.toLowerCase();
       return (!keyword || haystack.includes(keyword)) && (!year || item.applicationYear === year) && (!status || item.status === status);
