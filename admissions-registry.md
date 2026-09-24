@@ -8,14 +8,14 @@ permalink: /admissions-registry.html
   <header class="registry-hero">
     <span class="registry-kicker">Graduate Admissions Registry</span>
     <h1>研究生招生互助登记</h1>
-    <p>面向招生与推免沟通的公开信息板。仅登记必要信息，帮助考生与导师及时同步接收状态。</p>
+    <p>任何考生或导师均可登记，无需仓库权限。仅登记必要信息，帮助招生与推免双方及时同步接收状态。</p>
     <a class="registry-account-link" href="{{ '/my-admissions.html' | relative_url }}">我的登记</a>
   </header>
 
   <div class="registry-layout">
     <section class="registry-panel">
       <h2>提交登记</h2>
-      <p class="registry-note">提交后将跳转至 GitHub 创建一条公开记录。需要登录 GitHub，提交前可以再次核对内容。</p>
+      <p class="registry-note">任何人均可提交，无需联系管理员。提交时只需登录或免费注册 GitHub 账号，用于确认提交者身份并方便本人后续修改或下架记录。</p>
       <form id="registry-form" class="registry-form-grid">
         <div class="registry-field"><label for="candidate-name">考生姓名</label><input id="candidate-name" maxlength="30" required autocomplete="name"></div>
         <div class="registry-field"><label for="candidate-unit">考生单位</label><input id="candidate-unit" maxlength="80" required></div>
@@ -29,7 +29,7 @@ permalink: /admissions-registry.html
           </select>
         </div>
         <label class="registry-consent registry-span-2"><input id="registry-consent" type="checkbox" required><span>我确认上述信息真实，并已获得公开姓名、单位及沟通状态所需的授权；如状态变化，我会及时更新或申请删除。</span></label>
-        <button class="registry-submit registry-span-2" type="submit">前往 GitHub 确认提交</button>
+        <button class="registry-submit registry-span-2" type="submit">任何人均可登记 · 确认提交</button>
       </form>
       <div class="registry-guidelines"><strong>登记原则</strong><br>“失联待核实”只表示暂时无法取得联系，不代表对任何一方作出评价。禁止填写联系方式、身份证号、成绩等额外个人信息；存在争议时，以双方补充确认或删除记录为准。</div>
     </section>

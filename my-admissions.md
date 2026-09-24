@@ -8,7 +8,7 @@ permalink: /my-admissions.html
   <header class="registry-hero">
     <span class="registry-kicker">My Admissions Records</span>
     <h1>我的招生登记</h1>
-    <p>使用 GitHub 账号管理自己提交的登记，不在本站保存账号或密码。</p>
+    <p>任何人都可以使用自己的 GitHub 账号登记和管理记录，不需要成为仓库成员，本站也不会保存账号或密码。</p>
     <a class="registry-account-link" href="{{ '/admissions-registry.html' | relative_url }}">返回登记大厅</a>
   </header>
 
