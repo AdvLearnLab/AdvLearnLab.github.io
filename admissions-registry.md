@@ -24,13 +24,16 @@ permalink: /admissions-registry.html
           <div class="registry-field"><label for="candidate-program">考生学院 / 专业</label><input id="candidate-program" maxlength="80" placeholder="例如：计算机科学与技术学院 / 计算机科学与技术" required></div>
         </fieldset>
         <fieldset class="registry-person-fields registry-span-2">
-          <legend>导师信息</legend>
+          <legend>教师信息</legend>
           <div class="registry-field"><label for="supervisor-name">导师姓名</label><input id="supervisor-name" maxlength="30" required></div>
           <div class="registry-field"><label for="supervisor-school">导师学校</label><input id="supervisor-school" maxlength="60" placeholder="例如：安徽大学" required></div>
           <div class="registry-field"><label for="supervisor-program">导师学院 / 专业</label><input id="supervisor-program" maxlength="80" placeholder="例如：计算机科学与技术学院 / 计算机科学与技术" required></div>
         </fieldset>
-        <div class="registry-field registry-span-2"><label for="application-year">申请年份</label><select id="application-year" required><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option></select></div>
-        <div class="registry-field registry-span-2"><label for="registry-status">互选状态</label><select id="registry-status" required><option>沟通中</option><option>导师已同意接收</option><option>正式确认接收</option><option>双方已取消</option><option>暂时失联</option></select></div>
+        <fieldset class="registry-selection-fields registry-span-2">
+          <legend>互选信息</legend>
+          <div class="registry-field"><label for="application-year">申请年份</label><select id="application-year" required><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option></select></div>
+          <div class="registry-field"><label for="registry-status">互选状态</label><select id="registry-status" required><option>沟通中</option><option>导师已同意接收</option><option>正式确认接收</option><option>双方已取消</option><option>暂时失联</option></select></div>
+        </fieldset>
         <label class="registry-consent registry-span-2"><input id="registry-consent" type="checkbox" required><span>我确认上述信息真实，并已获得公开姓名、单位及沟通状态所需的授权；如状态变化，我会及时更新或申请删除。</span></label>
         <button class="registry-submit registry-span-2" type="submit">任何人均可登记 · 确认提交</button>
       </form>
