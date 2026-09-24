@@ -89,6 +89,11 @@
   font-size: 9px;
 }
 
+.tool-mark-registry {
+  background: #eaf3fb;
+  color: #245f8f;
+}
+
 .tool-card h2 {
   color: var(--ink, #172033);
   font-size: 17px;

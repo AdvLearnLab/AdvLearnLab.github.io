@@ -38,5 +38,14 @@ permalink: /tools.html
         <span class="tool-link">打开工具 →</span>
       </div>
     </a>
+
+    <a class="tool-card" href="{{ '/admissions-registry.html' | relative_url }}">
+      <span class="tool-mark tool-mark-registry">REG</span>
+      <div>
+        <h2>研究生招生互助登记</h2>
+        <p>公开登记考生与导师的沟通状态，方便招生、推免阶段互通信息。</p>
+        <span class="tool-link">打开登记 →</span>
+      </div>
+    </a>
   </div>
 </div>
