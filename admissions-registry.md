@@ -5,6 +5,7 @@ permalink: /admissions-registry.html
 ---
 
 <div class="registry-page">
+  <nav class="registry-standalone-nav" aria-label="登记工具导航"><a href="{{ '/' | relative_url }}">首页</a><a href="{{ '/tools.html' | relative_url }}">Tools</a><a class="active" href="{{ '/admissions-registry.html' | relative_url }}">招生互助登记</a></nav>
   <header class="registry-hero">
     <span class="registry-kicker">Graduate Admissions Registry</span>
     <h1>研究生招生互助登记</h1>

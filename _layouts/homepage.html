@@ -37,12 +37,12 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   {% endif %}
   {% if page.permalink == '/admissions-registry.html' or page.permalink == '/my-admissions.html' %}
-  <link rel="stylesheet" href="./assets/css/admissions-registry.css?v=20260924-6">
+  <link rel="stylesheet" href="./assets/css/admissions-registry.css?v=20260924-7">
   {% endif %}
 
 </head>
 
-<body>
+<body{% if page.permalink == '/admissions-registry.html' or page.permalink == '/my-admissions.html' %} class="standalone-registry-page"{% endif %}>
   <div class="wrapper">
     <header>
 
