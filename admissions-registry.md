@@ -43,7 +43,7 @@ permalink: /admissions-registry.html
       <p class="registry-note">数据来自公开 GitHub 记录，提交或修改后通常会在数分钟内同步。可按姓名或单位搜索，并按当前状态筛选。</p>
       <div class="registry-toolbar">
         <div class="registry-search"><input id="registry-query" type="search" placeholder="搜索姓名、学校、学院或专业"><select id="registry-year-filter" aria-label="按申请年份筛选"><option value="">全部年份</option><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option></select><select id="registry-filter" aria-label="按状态筛选"><option value="">全部状态</option><option>沟通中</option><option>接受意向</option><option>同意接收</option><option>已确认</option><option>正式确认</option><option>已放弃</option><option>拒绝接收</option><option>暂时失联</option></select></div>
-        <button id="registry-refresh" class="registry-refresh" type="button" title="刷新公开登记">刷新</button>
+        <button id="registry-search-button" class="registry-refresh" type="button">搜索</button>
       </div>
       <div id="registry-list" class="registry-list" aria-live="polite"><div class="registry-loading">正在读取公开登记...</div></div>
     </section>
@@ -67,6 +67,7 @@ permalink: /admissions-registry.html
   const filter = document.querySelector('#registry-filter');
   let entries = [];
   let autoChecks = 0;
+  let searchRequested = false;
   const clean = (value) => String(value || '').replace(/[\r\n|]/g, ' ').trim();
   const escapeHtml = (value) => clean(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 
@@ -93,8 +94,8 @@ permalink: /admissions-registry.html
     const keyword = clean(query.value).toLowerCase();
     const year = yearFilter.value;
     const status = filter.value;
-    if (!keyword && !year) {
-      list.innerHTML = '<div class="registry-empty">请输入姓名、单位，或选择申请年份后查询。</div>';
+    if (!searchRequested || (!keyword && !year && !status)) {
+      list.innerHTML = '<div class="registry-empty">填写姓名、学校、学院、专业、年份或状态，然后点击“搜索”。</div>';
       return;
     }
     const visible = entries.filter((item) => {
@@ -136,10 +137,16 @@ permalink: /admissions-registry.html
     const body = `${MARKER}\n考生姓名：${values.candidateName}\n考生学校：${values.candidateSchool}\n考生学院/专业：${values.candidateProgram}\n考生状态：${values.candidateStatus}\n导师姓名：${values.supervisorName}\n导师学校：${values.supervisorSchool}\n导师学院/专业：${values.supervisorProgram}\n导师状态：${values.supervisorStatus}\n申请年份：${values.applicationYear}\n\n> 本人确认信息真实并同意按页面登记原则公开。登记将长期保留，不接受提交者删除；双方状态及基本信息可以通过编辑本记录进行更新。`;
     window.open(`https://github.com/${REPO}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`, '_blank', 'noopener');
   });
-  query.addEventListener('input', render);
-  yearFilter.addEventListener('change', render);
-  filter.addEventListener('change', render);
-  document.querySelector('#registry-refresh').addEventListener('click', loadEntries);
+  document.querySelector('#registry-search-button').addEventListener('click', () => {
+    searchRequested = true;
+    render();
+  });
+  query.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter') return;
+    event.preventDefault();
+    searchRequested = true;
+    render();
+  });
   loadEntries();
 })();
 </script>
