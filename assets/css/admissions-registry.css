@@ -25,6 +25,7 @@
 .registry-person-fields, .registry-selection-fields { border: 1px solid var(--line, #dfe4ea); border-radius: 7px; display: grid; gap: 10px; margin: 0; min-width: 0; padding: 11px; }
 .registry-person-fields { grid-template-columns: .7fr 1fr 1.5fr; }
 .registry-selection-fields { grid-template-columns: 1fr 1fr 1.5fr; }
+.registry-selection-fields select { appearance: auto; cursor: pointer; pointer-events: auto !important; position: relative; z-index: 2; }
 .registry-person-fields legend, .registry-selection-fields legend { color: var(--accent, #315c96); font-size: 12px; font-weight: 800; padding: 0 5px; }
 .registry-consent { align-items: start; display: flex; float: none; font-size: 12px; gap: 8px; line-height: 1.5; margin-top: 2px; width: auto; }
 .registry-consent input { flex: 0 0 auto; margin-top: 3px; }
