@@ -17,7 +17,7 @@
 .registry-span-2 { grid-column: 1 / -1; }
 .registry-person-fields, .registry-selection-fields { border: 1px solid var(--line, #dfe4ea); border-radius: 7px; display: grid; gap: 10px; margin: 0; min-width: 0; padding: 11px; }
 .registry-person-fields { grid-template-columns: .7fr 1fr 1.5fr; }
-.registry-selection-fields { grid-template-columns: 1fr 2fr; }
+.registry-selection-fields { grid-template-columns: 1fr 1fr 1.5fr; }
 .registry-person-fields legend, .registry-selection-fields legend { color: var(--accent, #315c96); font-size: 12px; font-weight: 800; padding: 0 5px; }
 .registry-consent { align-items: start; display: flex; float: none; font-size: 12px; gap: 8px; line-height: 1.5; margin-top: 2px; width: auto; }
 .registry-consent input { flex: 0 0 auto; margin-top: 3px; }
@@ -37,6 +37,9 @@
 .registry-person em { color: var(--accent-2, #0f766e); display: block; font-size: 11px; font-style: normal; font-weight: 750; margin-top: 3px; }
 .registry-status { border-radius: 999px; display: inline-flex; font-size: 11px; font-weight: 800; padding: 4px 8px; }
 .registry-year { color: var(--muted, #667085); font-size: 11px; font-weight: 750; margin-right: 7px; }
+.registry-role { border-radius: 999px; display: inline-flex; font-size: 11px; font-weight: 800; margin-right: 7px; padding: 4px 8px; }
+.registry-role-student { background: #e8f6ee; color: #157347; }
+.registry-role-teacher { background: #e9f2fb; color: #245f8f; }
 .status-contact { background: #eef3f8; color: #49627a; }
 .status-agreed { background: #eaf6f1; color: #13715f; }
 .status-confirmed { background: #e9f2fb; color: #225f91; }

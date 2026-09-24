@@ -17,12 +17,13 @@ if (!response.ok) throw new Error(`GitHub API returned ${response.status}.`);
 const clean = (value) => String(value || '').replace(/[\r\n|]/g, ' ').trim();
 const bodyValue = (body, key) => clean(body.match(new RegExp(`^${key}：\\s*(.+)$`, 'm'))?.[1]);
 const issues = await response.json();
-const entries = issues.flatMap((issue) => {
+const parsedEntries = issues.flatMap((issue) => {
   if (!issue.body?.includes('<!-- admissions-registry -->') || issue.pull_request) return [];
   const legacyCandidateUnit = bodyValue(issue.body, '考生单位');
   const legacySupervisorUnit = bodyValue(issue.body, '导师单位');
   const legacyStatus = bodyValue(issue.body, '当前状态');
   const item = {
+    registrantRole: bodyValue(issue.body, '登记身份') || '学生',
     candidateName: bodyValue(issue.body, '考生姓名'),
     candidateSchool: bodyValue(issue.body, '考生学校') || legacyCandidateUnit,
     candidateProgram: bodyValue(issue.body, '考生学院/专业') || '未填写',
@@ -36,6 +37,24 @@ const entries = issues.flatMap((issue) => {
     number: issue.number
   };
   return [item.candidateName, item.candidateSchool, item.candidateProgram, item.supervisorName, item.supervisorSchool, item.supervisorProgram, item.status, item.applicationYear].every(Boolean) ? [item] : [];
+});
+
+const normalized = (value) => clean(value).toLocaleLowerCase('zh-CN').replace(/\s+/g, '');
+const seen = new Set();
+const entries = parsedEntries.filter((item) => {
+  const identity = [
+    item.registrantRole,
+    item.candidateName,
+    item.candidateSchool,
+    item.candidateProgram,
+    item.supervisorName,
+    item.supervisorSchool,
+    item.supervisorProgram,
+    item.applicationYear
+  ].map(normalized).join('|');
+  if (seen.has(identity)) return false;
+  seen.add(identity);
+  return true;
 });
 
 await mkdir('assets/data', { recursive: true });

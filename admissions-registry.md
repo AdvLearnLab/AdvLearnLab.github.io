@@ -31,13 +31,14 @@ permalink: /admissions-registry.html
         </fieldset>
         <fieldset class="registry-selection-fields registry-span-2">
           <legend>互选信息</legend>
+          <div class="registry-field"><label for="registrant-role">登记身份</label><select id="registrant-role" required><option value="学生">我是学生</option><option value="导师">我是导师</option></select></div>
           <div class="registry-field"><label for="application-year">申请年份</label><select id="application-year" required><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option></select></div>
           <div class="registry-field"><label for="registry-status">互选状态</label><select id="registry-status" required><option>沟通中</option><option>导师已同意接收</option><option>正式确认接收</option><option>双方已取消</option><option>暂时失联</option></select></div>
         </fieldset>
         <label class="registry-consent registry-span-2"><input id="registry-consent" type="checkbox" required><span>我确认上述信息真实，并已获得公开姓名、单位及沟通状态所需的授权；如状态变化，我会及时更新或申请删除。</span></label>
         <button class="registry-submit registry-span-2" type="submit">任何人均可登记 · 确认提交</button>
       </form>
-      <div class="registry-guidelines"><strong>登记原则</strong><br>登记将长期保留，提交者不能删除或通过关闭记录将其下架，但可以编辑互选状态及基本信息。“暂时失联”只表示当前无法取得联系，不代表对任何一方作出评价。</div>
+      <div class="registry-guidelines"><strong>登记原则</strong><br>学生登记显示为绿色，导师登记显示为蓝色。双方分别登记时各自保留；同一身份重复登记相同双方信息时，仅保留最近一次互选状态。登记长期保留，提交者不能删除。</div>
     </section>
 
     <section class="registry-panel">
@@ -60,7 +61,7 @@ permalink: /admissions-registry.html
     candidateName: document.querySelector('#candidate-name'), candidateSchool: document.querySelector('#candidate-school'),
     candidateProgram: document.querySelector('#candidate-program'),
     supervisorName: document.querySelector('#supervisor-name'), supervisorSchool: document.querySelector('#supervisor-school'),
-    supervisorProgram: document.querySelector('#supervisor-program'), applicationYear: document.querySelector('#application-year'),
+    supervisorProgram: document.querySelector('#supervisor-program'), registrantRole: document.querySelector('#registrant-role'), applicationYear: document.querySelector('#application-year'),
     status: document.querySelector('#registry-status')
   };
   const list = document.querySelector('#registry-list');
@@ -108,7 +109,7 @@ permalink: /admissions-registry.html
     if (!visible.length) { list.innerHTML = '<div class="registry-empty">暂无符合条件的公开登记。</div>'; return; }
     list.innerHTML = visible.map((item) => `
       <article class="registry-entry">
-        <div class="registry-entry-head"><div><span class="registry-year">${escapeHtml(item.applicationYear)} 年</span><span class="registry-status ${statusClass(item.status)}">${escapeHtml(item.status)}</span></div><span>#${item.number}</span></div>
+        <div class="registry-entry-head"><div><span class="registry-role registry-role-${item.registrantRole === '导师' ? 'teacher' : 'student'}">${item.registrantRole === '导师' ? '导师登记' : '学生登记'}</span><span class="registry-year">${escapeHtml(item.applicationYear)} 年</span><span class="registry-status ${statusClass(item.status)}">${escapeHtml(item.status)}</span></div><span>#${item.number}</span></div>
         <div class="registry-person"><div><strong>${escapeHtml(item.candidateName)}</strong><span>${escapeHtml(item.candidateSchool)} · ${escapeHtml(item.candidateProgram)}</span></div><span class="registry-person-arrow">→</span><div><strong>${escapeHtml(item.supervisorName)}</strong><span>${escapeHtml(item.supervisorSchool)} · ${escapeHtml(item.supervisorProgram)}</span></div></div>
         <div class="registry-entry-foot"><span>更新于 ${new Date(item.updated).toLocaleDateString('zh-CN')}</span><a href="${item.url}" target="_blank" rel="noopener">查看 / 补充 / 纠错</a></div>
       </article>`).join('');
@@ -135,8 +136,8 @@ permalink: /admissions-registry.html
   document.querySelector('#registry-form').addEventListener('submit', (event) => {
     event.preventDefault();
     const values = Object.fromEntries(Object.entries(fields).map(([key, input]) => [key, clean(input.value)]));
-    const title = `[招生登记] ${values.applicationYear} / ${values.candidateName} / ${values.supervisorName}`;
-    const body = `${MARKER}\n考生姓名：${values.candidateName}\n考生学校：${values.candidateSchool}\n考生学院/专业：${values.candidateProgram}\n导师姓名：${values.supervisorName}\n导师学校：${values.supervisorSchool}\n导师学院/专业：${values.supervisorProgram}\n申请年份：${values.applicationYear}\n互选状态：${values.status}\n\n> 本人确认信息真实并同意按页面登记原则公开。登记将长期保留，不接受提交者删除；互选状态及基本信息可以通过编辑本记录进行更新。`;
+    const title = `[${values.registrantRole}登记] ${values.applicationYear} / ${values.candidateName} / ${values.supervisorName}`;
+    const body = `${MARKER}\n登记身份：${values.registrantRole}\n考生姓名：${values.candidateName}\n考生学校：${values.candidateSchool}\n考生学院/专业：${values.candidateProgram}\n导师姓名：${values.supervisorName}\n导师学校：${values.supervisorSchool}\n导师学院/专业：${values.supervisorProgram}\n申请年份：${values.applicationYear}\n互选状态：${values.status}\n\n> 本人确认信息真实并同意按页面登记原则公开。同一身份重复登记相同双方信息时，数据库仅保留最近更新的互选状态。`;
     window.open(`https://github.com/${REPO}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`, '_blank', 'noopener');
   });
   document.querySelector('#registry-search-button').addEventListener('click', () => {
