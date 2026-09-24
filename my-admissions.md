@@ -31,8 +31,8 @@ permalink: /my-admissions.html
     <section class="registry-panel registry-account-panel">
       <span class="registry-step">03</span>
       <h2>修改或下架</h2>
-      <p>进入记录后可编辑正文来更新年份或状态。关闭 Issue 即视为删除公开登记，系统会自动将其从列表下架。</p>
-      <p class="registry-account-hint">关闭后的 GitHub 历史仍然可见；需要彻底删除时，请在该记录内留言联系仓库管理员。</p>
+      <p>进入记录后可编辑考生状态、导师状态、年份及基本信息。登记会长期保留，提交者不能删除；即使关闭 Issue，记录仍保存在登记数据库中。</p>
+      <p class="registry-account-hint">如遇冒名、错误登记或隐私争议，请在原记录中留言，由仓库管理员核验处理。</p>
     </section>
   </div>
 </div>

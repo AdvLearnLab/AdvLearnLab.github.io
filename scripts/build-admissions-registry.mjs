@@ -18,19 +18,25 @@ const clean = (value) => String(value || '').replace(/[\r\n|]/g, ' ').trim();
 const bodyValue = (body, key) => clean(body.match(new RegExp(`^${key}：\\s*(.+)$`, 'm'))?.[1]);
 const issues = await response.json();
 const entries = issues.flatMap((issue) => {
-  if (issue.state !== 'open' || !issue.body?.includes('<!-- admissions-registry -->') || issue.pull_request) return [];
+  if (!issue.body?.includes('<!-- admissions-registry -->') || issue.pull_request) return [];
+  const legacyCandidateUnit = bodyValue(issue.body, '考生单位');
+  const legacySupervisorUnit = bodyValue(issue.body, '导师单位');
+  const legacyStatus = bodyValue(issue.body, '当前状态');
   const item = {
     candidateName: bodyValue(issue.body, '考生姓名'),
-    candidateUnit: bodyValue(issue.body, '考生单位'),
+    candidateSchool: bodyValue(issue.body, '考生学校') || legacyCandidateUnit,
+    candidateProgram: bodyValue(issue.body, '考生学院/专业') || '未填写',
+    candidateStatus: bodyValue(issue.body, '考生状态') || '未填写',
     supervisorName: bodyValue(issue.body, '导师姓名'),
-    supervisorUnit: bodyValue(issue.body, '导师单位'),
+    supervisorSchool: bodyValue(issue.body, '导师学校') || legacySupervisorUnit,
+    supervisorProgram: bodyValue(issue.body, '导师学院/专业') || '未填写',
+    supervisorStatus: bodyValue(issue.body, '导师状态') || legacyStatus || '未填写',
     applicationYear: bodyValue(issue.body, '申请年份'),
-    status: bodyValue(issue.body, '当前状态'),
     updated: issue.updated_at,
     url: issue.html_url,
     number: issue.number
   };
-  return [item.candidateName, item.candidateUnit, item.supervisorName, item.supervisorUnit, item.applicationYear, item.status].every(Boolean) ? [item] : [];
+  return [item.candidateName, item.candidateSchool, item.candidateProgram, item.candidateStatus, item.supervisorName, item.supervisorSchool, item.supervisorProgram, item.supervisorStatus, item.applicationYear].every(Boolean) ? [item] : [];
 });
 
 await mkdir('assets/data', { recursive: true });

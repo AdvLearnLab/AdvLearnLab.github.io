@@ -6,7 +6,7 @@
 .registry-hero h1 { font-size: 27px; letter-spacing: 0; margin: 0 0 7px; }
 .registry-hero p, .registry-note, .registry-empty { color: var(--muted, #667085); }
 .registry-hero p { margin: 0; max-width: 800px; }
-.registry-layout { align-items: start; display: grid; gap: 18px; grid-template-columns: minmax(280px, .8fr) minmax(0, 1.6fr); }
+.registry-layout { align-items: start; display: grid; gap: 18px; grid-template-columns: minmax(390px, 1fr) minmax(0, 1.15fr); }
 .registry-panel { background: var(--panel-bg, #fff); border: 1px solid var(--line, #dfe4ea); border-radius: 8px; box-sizing: border-box; float: none; min-width: 0; padding: 16px; width: auto; }
 .registry-panel h2 { font-size: 18px; margin: 0 0 4px; }
 .registry-note { font-size: 12.5px; line-height: 1.55; margin: 0 0 14px; }
@@ -15,6 +15,8 @@
 .registry-field label { font-size: 12px; font-weight: 750; margin-bottom: 5px; }
 .registry-field input, .registry-field select, .registry-search input, .registry-search select { background: var(--panel-bg, #fff); border: 1px solid var(--line, #dfe4ea); border-radius: 6px; box-sizing: border-box; color: var(--ink, #172033); font: inherit; height: 40px; padding: 7px 9px; width: 100%; }
 .registry-span-2 { grid-column: 1 / -1; }
+.registry-person-fields { border: 1px solid var(--line, #dfe4ea); border-radius: 7px; display: grid; gap: 10px; grid-template-columns: 1fr 1fr; margin: 0; min-width: 0; padding: 11px; }
+.registry-person-fields legend { color: var(--accent, #315c96); font-size: 12px; font-weight: 800; padding: 0 5px; }
 .registry-consent { align-items: start; display: flex; float: none; font-size: 12px; gap: 8px; line-height: 1.5; margin-top: 2px; width: auto; }
 .registry-consent input { flex: 0 0 auto; margin-top: 3px; }
 .registry-submit { background: var(--accent, #315c96); border: 1px solid var(--accent, #315c96); border-radius: 6px; color: #fff; cursor: pointer; font: inherit; font-size: 13px; font-weight: 750; height: 40px; padding: 0 14px; }
@@ -30,6 +32,7 @@
 .registry-person-arrow { color: var(--muted, #667085); font-weight: 750; }
 .registry-person strong, .registry-person span { display: block; }
 .registry-person span { color: var(--muted, #667085); font-size: 12px; }
+.registry-person em { color: var(--accent-2, #0f766e); display: block; font-size: 11px; font-style: normal; font-weight: 750; margin-top: 3px; }
 .registry-status { border-radius: 999px; display: inline-flex; font-size: 11px; font-weight: 800; padding: 4px 8px; }
 .registry-year { color: var(--muted, #667085); font-size: 11px; font-weight: 750; margin-right: 7px; }
 .status-contact { background: #eef3f8; color: #49627a; }
@@ -50,5 +53,5 @@
 .registry-account-hint { border-top: 1px solid var(--line, #dfe4ea); font-size: 11.5px !important; margin-top: 14px; padding-top: 10px; }
 @media screen and (max-width: 850px) { .registry-layout { grid-template-columns: 1fr; } .registry-list { max-height: none; } }
 @media screen and (max-width: 850px) { .registry-account-grid { grid-template-columns: 1fr; } .registry-account-panel { min-height: 0; } }
-@media screen and (max-width: 560px) { .registry-form-grid, .registry-search { grid-template-columns: 1fr; } .registry-toolbar, .registry-person { align-items: stretch; flex-direction: column; } .registry-person-arrow { transform: rotate(90deg); width: fit-content; } }
+@media screen and (max-width: 560px) { .registry-form-grid, .registry-search, .registry-person-fields { grid-template-columns: 1fr; } .registry-toolbar, .registry-person { align-items: stretch; flex-direction: column; } .registry-person-arrow { transform: rotate(90deg); width: fit-content; } }
 @media screen and (max-width: 560px) { .registry-account-link { display: inline-block; margin-top: 12px; position: static; } }
