@@ -1,5 +1,19 @@
 [
   {
+    "registrantRole": "学生",
+    "candidateName": "许超",
+    "candidateSchool": "安徽大学",
+    "candidateProgram": "计算机科学与技术",
+    "supervisorName": "赵梦楠",
+    "supervisorSchool": "安徽大学",
+    "supervisorProgram": "计算机科学与技术",
+    "status": "沟通中",
+    "applicationYear": "2026",
+    "updated": "2026-09-24T07:36:34Z",
+    "url": "https://github.com/AdvLearnLab/AdvLearnLab.github.io/issues/4",
+    "number": 4
+  },
+  {
     "registrantRole": "导师",
     "candidateName": "许超",
     "candidateSchool": "安徽大学",
