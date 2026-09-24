@@ -18,18 +18,19 @@ const clean = (value) => String(value || '').replace(/[\r\n|]/g, ' ').trim();
 const bodyValue = (body, key) => clean(body.match(new RegExp(`^${key}：\\s*(.+)$`, 'm'))?.[1]);
 const issues = await response.json();
 const entries = issues.flatMap((issue) => {
-  if (!issue.body?.includes('<!-- admissions-registry -->') || issue.pull_request) return [];
+  if (issue.state !== 'open' || !issue.body?.includes('<!-- admissions-registry -->') || issue.pull_request) return [];
   const item = {
     candidateName: bodyValue(issue.body, '考生姓名'),
     candidateUnit: bodyValue(issue.body, '考生单位'),
     supervisorName: bodyValue(issue.body, '导师姓名'),
     supervisorUnit: bodyValue(issue.body, '导师单位'),
+    applicationYear: bodyValue(issue.body, '申请年份'),
     status: bodyValue(issue.body, '当前状态'),
     updated: issue.updated_at,
     url: issue.html_url,
     number: issue.number
   };
-  return [item.candidateName, item.candidateUnit, item.supervisorName, item.supervisorUnit, item.status].every(Boolean) ? [item] : [];
+  return [item.candidateName, item.candidateUnit, item.supervisorName, item.supervisorUnit, item.applicationYear, item.status].every(Boolean) ? [item] : [];
 });
 
 await mkdir('assets/data', { recursive: true });

@@ -9,6 +9,7 @@ permalink: /admissions-registry.html
     <span class="registry-kicker">Graduate Admissions Registry</span>
     <h1>研究生招生互助登记</h1>
     <p>面向招生与推免沟通的公开信息板。仅登记必要信息，帮助考生与导师及时同步接收状态。</p>
+    <a class="registry-account-link" href="{{ '/my-admissions.html' | relative_url }}">我的登记</a>
   </header>
 
   <div class="registry-layout">
@@ -20,6 +21,7 @@ permalink: /admissions-registry.html
         <div class="registry-field"><label for="candidate-unit">考生单位</label><input id="candidate-unit" maxlength="80" required></div>
         <div class="registry-field"><label for="supervisor-name">导师姓名</label><input id="supervisor-name" maxlength="30" required></div>
         <div class="registry-field"><label for="supervisor-unit">导师单位</label><input id="supervisor-unit" maxlength="80" required></div>
+        <div class="registry-field registry-span-2"><label for="application-year">申请年份</label><select id="application-year" required><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option></select></div>
         <div class="registry-field registry-span-2">
           <label for="registry-status">当前状态</label>
           <select id="registry-status" required>
@@ -36,7 +38,7 @@ permalink: /admissions-registry.html
       <h2>公开登记</h2>
       <p class="registry-note">数据来自公开 GitHub 记录，提交或修改后通常会在数分钟内同步。可按姓名或单位搜索，并按当前状态筛选。</p>
       <div class="registry-toolbar">
-        <div class="registry-search"><input id="registry-query" type="search" placeholder="搜索姓名或单位"><select id="registry-filter" aria-label="按状态筛选"><option value="">全部状态</option><option>沟通中</option><option>导师已同意接收</option><option>正式确认接收</option><option>双方已取消</option><option>失联待核实</option></select></div>
+        <div class="registry-search"><input id="registry-query" type="search" placeholder="搜索姓名或单位"><select id="registry-year-filter" aria-label="按申请年份筛选"><option value="">全部年份</option><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option></select><select id="registry-filter" aria-label="按状态筛选"><option value="">全部状态</option><option>沟通中</option><option>导师已同意接收</option><option>正式确认接收</option><option>双方已取消</option><option>失联待核实</option></select></div>
         <button id="registry-refresh" class="registry-refresh" type="button" title="刷新公开登记">刷新</button>
       </div>
       <div id="registry-list" class="registry-list" aria-live="polite"><div class="registry-loading">正在读取公开登记...</div></div>
@@ -51,10 +53,11 @@ permalink: /admissions-registry.html
   const fields = {
     candidateName: document.querySelector('#candidate-name'), candidateUnit: document.querySelector('#candidate-unit'),
     supervisorName: document.querySelector('#supervisor-name'), supervisorUnit: document.querySelector('#supervisor-unit'),
-    status: document.querySelector('#registry-status')
+    applicationYear: document.querySelector('#application-year'), status: document.querySelector('#registry-status')
   };
   const list = document.querySelector('#registry-list');
   const query = document.querySelector('#registry-query');
+  const yearFilter = document.querySelector('#registry-year-filter');
   const filter = document.querySelector('#registry-filter');
   let entries = [];
   const clean = (value) => String(value || '').replace(/[\r\n|]/g, ' ').trim();
@@ -70,7 +73,7 @@ permalink: /admissions-registry.html
     const item = {
       candidateName: bodyValue(issue.body, '考生姓名'), candidateUnit: bodyValue(issue.body, '考生单位'),
       supervisorName: bodyValue(issue.body, '导师姓名'), supervisorUnit: bodyValue(issue.body, '导师单位'),
-      status: bodyValue(issue.body, '当前状态'), updated: issue.updated_at, url: issue.html_url, number: issue.number
+      applicationYear: bodyValue(issue.body, '申请年份'), status: bodyValue(issue.body, '当前状态'), updated: issue.updated_at, url: issue.html_url, number: issue.number
     };
     return [item.candidateName, item.candidateUnit, item.supervisorName, item.supervisorUnit, item.status].every(Boolean) ? item : null;
   }
@@ -81,15 +84,16 @@ permalink: /admissions-registry.html
 
   function render() {
     const keyword = clean(query.value).toLowerCase();
+    const year = yearFilter.value;
     const status = filter.value;
     const visible = entries.filter((item) => {
       const haystack = `${item.candidateName} ${item.candidateUnit} ${item.supervisorName} ${item.supervisorUnit}`.toLowerCase();
-      return (!keyword || haystack.includes(keyword)) && (!status || item.status === status);
+      return (!keyword || haystack.includes(keyword)) && (!year || item.applicationYear === year) && (!status || item.status === status);
     });
     if (!visible.length) { list.innerHTML = '<div class="registry-empty">暂无符合条件的公开登记。</div>'; return; }
     list.innerHTML = visible.map((item) => `
       <article class="registry-entry">
-        <div class="registry-entry-head"><span class="registry-status ${statusClass(item.status)}">${escapeHtml(item.status)}</span><span>#${item.number}</span></div>
+        <div class="registry-entry-head"><div><span class="registry-year">${escapeHtml(item.applicationYear)} 年</span><span class="registry-status ${statusClass(item.status)}">${escapeHtml(item.status)}</span></div><span>#${item.number}</span></div>
         <div class="registry-person"><div><strong>${escapeHtml(item.candidateName)}</strong><span>${escapeHtml(item.candidateUnit)}</span></div><span class="registry-person-arrow">→</span><div><strong>${escapeHtml(item.supervisorName)}</strong><span>${escapeHtml(item.supervisorUnit)}</span></div></div>
         <div class="registry-entry-foot"><span>更新于 ${new Date(item.updated).toLocaleDateString('zh-CN')}</span><a href="${item.url}" target="_blank" rel="noopener">查看 / 补充 / 纠错</a></div>
       </article>`).join('');
@@ -112,11 +116,12 @@ permalink: /admissions-registry.html
   document.querySelector('#registry-form').addEventListener('submit', (event) => {
     event.preventDefault();
     const values = Object.fromEntries(Object.entries(fields).map(([key, input]) => [key, clean(input.value)]));
-    const title = `[招生登记] ${values.candidateName} / ${values.supervisorName} / ${values.status}`;
-    const body = `${MARKER}\n考生姓名：${values.candidateName}\n考生单位：${values.candidateUnit}\n导师姓名：${values.supervisorName}\n导师单位：${values.supervisorUnit}\n当前状态：${values.status}\n\n> 本人确认信息真实并同意按页面登记原则公开。状态变化后请编辑本记录或留言申请更正。`;
+    const title = `[招生登记] ${values.applicationYear} / ${values.candidateName} / ${values.supervisorName} / ${values.status}`;
+    const body = `${MARKER}\n考生姓名：${values.candidateName}\n考生单位：${values.candidateUnit}\n导师姓名：${values.supervisorName}\n导师单位：${values.supervisorUnit}\n申请年份：${values.applicationYear}\n当前状态：${values.status}\n\n> 本人确认信息真实并同意按页面登记原则公开。状态变化后请编辑本记录；关闭本 Issue 后，记录将从公开登记中下架。`;
     window.open(`https://github.com/${REPO}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`, '_blank', 'noopener');
   });
   query.addEventListener('input', render);
+  yearFilter.addEventListener('change', render);
   filter.addEventListener('change', render);
   document.querySelector('#registry-refresh').addEventListener('click', loadEntries);
   loadEntries();

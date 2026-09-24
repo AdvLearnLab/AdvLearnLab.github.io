@@ -1,5 +1,7 @@
 .registry-page { color: var(--ink, #172033); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
 .registry-hero { border-bottom: 1px solid var(--line, #dfe4ea); margin-bottom: 18px; padding-bottom: 16px; }
+.registry-hero { position: relative; }
+.registry-account-link { background: var(--accent, #315c96); border-radius: 6px; color: #fff; font-size: 12px; font-weight: 750; padding: 8px 11px; position: absolute; right: 0; text-decoration: none; top: 4px; }
 .registry-kicker { color: var(--accent-2, #0f766e); display: block; font-size: 12px; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; }
 .registry-hero h1 { font-size: 27px; letter-spacing: 0; margin: 0 0 7px; }
 .registry-hero p, .registry-note, .registry-empty { color: var(--muted, #667085); }
@@ -19,7 +21,7 @@
 .registry-submit:hover { filter: brightness(.94); }
 .registry-guidelines { background: #f5f8fb; border-left: 3px solid var(--accent, #315c96); font-size: 12px; line-height: 1.6; margin-top: 14px; padding: 10px 12px; }
 .registry-toolbar { align-items: center; display: flex; gap: 8px; justify-content: space-between; margin-bottom: 12px; }
-.registry-search { display: grid; flex: 1; gap: 8px; grid-template-columns: minmax(150px, 1fr) 145px; }
+.registry-search { display: grid; flex: 1; gap: 8px; grid-template-columns: minmax(140px, 1fr) 112px 132px; }
 .registry-refresh { background: var(--panel-bg, #fff); border: 1px solid var(--line, #dfe4ea); border-radius: 6px; color: var(--ink, #172033); cursor: pointer; font: inherit; font-size: 13px; height: 40px; padding: 0 11px; }
 .registry-list { display: grid; gap: 9px; max-height: 600px; overflow-y: auto; padding-right: 3px; }
 .registry-entry { border: 1px solid var(--line, #dfe4ea); border-radius: 7px; padding: 12px; }
@@ -29,6 +31,7 @@
 .registry-person strong, .registry-person span { display: block; }
 .registry-person span { color: var(--muted, #667085); font-size: 12px; }
 .registry-status { border-radius: 999px; display: inline-flex; font-size: 11px; font-weight: 800; padding: 4px 8px; }
+.registry-year { color: var(--muted, #667085); font-size: 11px; font-weight: 750; margin-right: 7px; }
 .status-contact { background: #eef3f8; color: #49627a; }
 .status-agreed { background: #eaf6f1; color: #13715f; }
 .status-confirmed { background: #e9f2fb; color: #225f91; }
@@ -37,5 +40,15 @@
 .registry-entry-foot { border-top: 1px solid var(--line, #dfe4ea); color: var(--muted, #667085); font-size: 11px; margin-top: 10px; padding-top: 8px; }
 .registry-entry-foot a { color: var(--accent, #315c96); }
 .registry-loading, .registry-empty { font-size: 13px; padding: 30px 10px; text-align: center; }
+.registry-account-grid { display: grid; gap: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.registry-account-panel { min-height: 220px; }
+.registry-account-panel h2 { margin-top: 10px; }
+.registry-account-panel p { color: var(--muted, #667085); font-size: 13px; line-height: 1.65; }
+.registry-step { color: var(--accent-2, #0f766e); font-size: 12px; font-weight: 850; }
+.registry-account-button { background: var(--accent, #315c96); border: 1px solid var(--accent, #315c96); border-radius: 6px; color: #fff; display: inline-block; font-size: 12.5px; font-weight: 750; margin: 8px 5px 0 0; padding: 8px 11px; text-decoration: none; }
+.registry-account-secondary { background: transparent; color: var(--accent, #315c96); }
+.registry-account-hint { border-top: 1px solid var(--line, #dfe4ea); font-size: 11.5px !important; margin-top: 14px; padding-top: 10px; }
 @media screen and (max-width: 850px) { .registry-layout { grid-template-columns: 1fr; } .registry-list { max-height: none; } }
+@media screen and (max-width: 850px) { .registry-account-grid { grid-template-columns: 1fr; } .registry-account-panel { min-height: 0; } }
 @media screen and (max-width: 560px) { .registry-form-grid, .registry-search { grid-template-columns: 1fr; } .registry-toolbar, .registry-person { align-items: stretch; flex-direction: column; } .registry-person-arrow { transform: rotate(90deg); width: fit-content; } }
+@media screen and (max-width: 560px) { .registry-account-link { display: inline-block; margin-top: 12px; position: static; } }
