@@ -85,8 +85,8 @@ permalink: /image-editor.html
           <label for="image-bg-color">目标颜色</label>
           <input id="image-bg-color" type="color" value="#ffffff">
           <label for="image-bg-tolerance">容差</label>
-          <input id="image-bg-tolerance" type="range" min="10" max="180" value="65">
-          <output id="bg-tolerance-value">65</output>
+          <input id="image-bg-tolerance" type="range" min="8" max="100" value="42">
+          <output id="bg-tolerance-value">42</output>
         </div>
       </div>
     </div>
@@ -232,7 +232,7 @@ permalink: /image-editor.html
       focusY: 50,
       bgEnabled: false,
       bgColor: '#ffffff',
-      bgTolerance: 65,
+      bgTolerance: 42,
       watermarkText: '',
       watermarkColor: '#ffffff',
       watermarkOpacity: 55,
@@ -368,13 +368,21 @@ permalink: /image-editor.html
     function replaceBackground(context, width, height) {
       const imageData = context.getImageData(0, 0, width, height);
       const data = imageData.data;
-      const samples = [[2, 2], [width - 3, 2], [2, height - 3], [width - 3, height - 3]];
-      const sample = samples.reduce((sum, point) => {
-        const index = (Math.max(0, point[1]) * width + Math.max(0, point[0])) * 4;
-        return [sum[0] + data[index], sum[1] + data[index + 1], sum[2] + data[index + 2]];
-      }, [0, 0, 0]).map((value) => value / samples.length);
+      const patchSize = Math.max(2, Math.round(Math.min(width, height) * 0.025));
+      const channels = [[], [], []];
+      for (let y = 0; y < patchSize; y++) {
+        for (let x = 0; x < patchSize; x++) {
+          for (const sampleX of [x, width - 1 - x]) {
+            const index = (y * width + sampleX) * 4;
+            channels[0].push(data[index]);
+            channels[1].push(data[index + 1]);
+            channels[2].push(data[index + 2]);
+          }
+        }
+      }
+      const sample = channels.map((values) => values.sort((a, b) => a - b)[Math.floor(values.length / 2)]);
       const target = state.bgColor.match(/[a-f\d]{2}/gi).map((hex) => parseInt(hex, 16));
-      const feather = 35;
+      const feather = 22;
       const visited = new Uint8Array(width * height);
       const queue = new Int32Array(width * height);
       let head = 0;
@@ -389,11 +397,11 @@ permalink: /image-editor.html
         queue[tail++] = pixel;
       }
 
-      for (let x = 0; x < width; x++) {
-        enqueue(x);
-        enqueue((height - 1) * width + x);
-      }
-      for (let y = 1; y < height - 1; y++) {
+      // Seed only the top and upper side edges. The subject commonly touches the
+      // bottom edge of an ID photo, so using the full border can recolor clothes.
+      for (let x = 0; x < width; x++) enqueue(x);
+      const sideLimit = Math.max(1, Math.round(height * 0.55));
+      for (let y = 1; y < sideLimit; y++) {
         enqueue(y * width);
         enqueue(y * width + width - 1);
       }
@@ -450,7 +458,7 @@ permalink: /image-editor.html
       state.focusY = 50;
       state.bgEnabled = false;
       state.bgColor = '#ffffff';
-      state.bgTolerance = 65;
+      state.bgTolerance = 42;
       state.watermarkText = '';
       state.watermarkColor = '#ffffff';
       state.watermarkOpacity = 55;
