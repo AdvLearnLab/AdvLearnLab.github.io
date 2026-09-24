@@ -26,17 +26,16 @@ const entries = issues.flatMap((issue) => {
     candidateName: bodyValue(issue.body, '考生姓名'),
     candidateSchool: bodyValue(issue.body, '考生学校') || legacyCandidateUnit,
     candidateProgram: bodyValue(issue.body, '考生学院/专业') || '未填写',
-    candidateStatus: bodyValue(issue.body, '考生状态') || '未填写',
     supervisorName: bodyValue(issue.body, '导师姓名'),
     supervisorSchool: bodyValue(issue.body, '导师学校') || legacySupervisorUnit,
     supervisorProgram: bodyValue(issue.body, '导师学院/专业') || '未填写',
-    supervisorStatus: bodyValue(issue.body, '导师状态') || legacyStatus || '未填写',
+    status: bodyValue(issue.body, '当前状态') || bodyValue(issue.body, '导师状态') || bodyValue(issue.body, '考生状态') || legacyStatus || '未填写',
     applicationYear: bodyValue(issue.body, '申请年份'),
     updated: issue.updated_at,
     url: issue.html_url,
     number: issue.number
   };
-  return [item.candidateName, item.candidateSchool, item.candidateProgram, item.candidateStatus, item.supervisorName, item.supervisorSchool, item.supervisorProgram, item.supervisorStatus, item.applicationYear].every(Boolean) ? [item] : [];
+  return [item.candidateName, item.candidateSchool, item.candidateProgram, item.supervisorName, item.supervisorSchool, item.supervisorProgram, item.status, item.applicationYear].every(Boolean) ? [item] : [];
 });
 
 await mkdir('assets/data', { recursive: true });
