@@ -99,7 +99,7 @@ permalink: /admissions-registry.html
     list.innerHTML = '<div class="registry-loading">正在读取公开登记...</div>';
     try {
       const dataUrl = 'https://advlearnlab.github.io/assets/data/admissions-registry.json';
-      const response = await fetch(`${dataUrl}?v=${Date.now()}`, { cache: 'no-store' });
+      const response = await fetch(dataUrl);
       if (!response.ok) throw new Error(`Registry data ${response.status}`);
       entries = await response.json();
       render();
