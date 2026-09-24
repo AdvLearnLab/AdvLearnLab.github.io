@@ -8,6 +8,7 @@ on:
 permissions:
   contents: write
   issues: read
+  actions: write
 
 jobs:
   update:
@@ -35,3 +36,7 @@ jobs:
           git add assets/data/admissions-registry.json
           git commit -m "Update admissions registry data"
           git push
+      - name: Deploy updated registry
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run pages.yml --ref master

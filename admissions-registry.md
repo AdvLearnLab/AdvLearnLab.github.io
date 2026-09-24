@@ -31,7 +31,7 @@ permalink: /admissions-registry.html
         </fieldset>
         <fieldset class="registry-selection-fields registry-span-2">
           <legend>互选信息</legend>
-          <div class="registry-field"><label for="registrant-role">登记身份</label><select id="registrant-role" required><option value="学生">我是学生</option><option value="导师">我是导师</option></select></div>
+          <div class="registry-field"><span class="registry-field-label">登记身份</span><div class="registry-role-picker"><label class="registry-role-option registry-role-option-student"><input type="radio" name="registrant-role" value="学生" checked><span>我是学生</span></label><label class="registry-role-option registry-role-option-teacher"><input type="radio" name="registrant-role" value="导师"><span>我是导师</span></label></div></div>
           <div class="registry-field"><label for="application-year">申请年份</label><select id="application-year" required><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option></select></div>
           <div class="registry-field"><label for="registry-status">互选状态</label><select id="registry-status" required><option>沟通中</option><option>导师已同意接收</option><option>正式确认接收</option><option>双方已取消</option><option>暂时失联</option></select></div>
         </fieldset>
@@ -61,7 +61,7 @@ permalink: /admissions-registry.html
     candidateName: document.querySelector('#candidate-name'), candidateSchool: document.querySelector('#candidate-school'),
     candidateProgram: document.querySelector('#candidate-program'),
     supervisorName: document.querySelector('#supervisor-name'), supervisorSchool: document.querySelector('#supervisor-school'),
-    supervisorProgram: document.querySelector('#supervisor-program'), registrantRole: document.querySelector('#registrant-role'), applicationYear: document.querySelector('#application-year'),
+    supervisorProgram: document.querySelector('#supervisor-program'), applicationYear: document.querySelector('#application-year'),
     status: document.querySelector('#registry-status')
   };
   const list = document.querySelector('#registry-list');
@@ -136,6 +136,7 @@ permalink: /admissions-registry.html
   document.querySelector('#registry-form').addEventListener('submit', (event) => {
     event.preventDefault();
     const values = Object.fromEntries(Object.entries(fields).map(([key, input]) => [key, clean(input.value)]));
+    values.registrantRole = document.querySelector('input[name="registrant-role"]:checked').value;
     const title = `[${values.registrantRole}登记] ${values.applicationYear} / ${values.candidateName} / ${values.supervisorName}`;
     const body = `${MARKER}\n登记身份：${values.registrantRole}\n考生姓名：${values.candidateName}\n考生学校：${values.candidateSchool}\n考生学院/专业：${values.candidateProgram}\n导师姓名：${values.supervisorName}\n导师学校：${values.supervisorSchool}\n导师学院/专业：${values.supervisorProgram}\n申请年份：${values.applicationYear}\n互选状态：${values.status}\n\n> 本人确认信息真实并同意按页面登记原则公开。同一身份重复登记相同双方信息时，数据库仅保留最近更新的互选状态。`;
     window.open(`https://github.com/${REPO}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`, '_blank', 'noopener');

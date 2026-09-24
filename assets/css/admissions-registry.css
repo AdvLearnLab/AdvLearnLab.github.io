@@ -13,6 +13,13 @@
 .registry-form-grid { display: grid; gap: 11px; grid-template-columns: 1fr 1fr; }
 .registry-field, .registry-field label { display: block; }
 .registry-field label { font-size: 12px; font-weight: 750; margin-bottom: 5px; }
+.registry-field-label { display: block; font-size: 12px; font-weight: 750; margin-bottom: 5px; }
+.registry-role-picker { display: grid; gap: 6px; grid-template-columns: 1fr 1fr; }
+.registry-role-option { cursor: pointer; float: none; margin: 0 !important; width: auto; }
+.registry-role-option input { height: 1px; opacity: 0; position: absolute; width: 1px; }
+.registry-role-option span { align-items: center; border: 1px solid var(--line, #dfe4ea); border-radius: 6px; display: flex; height: 38px; justify-content: center; }
+.registry-role-option-student input:checked + span { background: #e8f6ee; border-color: #55a67a; color: #157347; }
+.registry-role-option-teacher input:checked + span { background: #e9f2fb; border-color: #6193bd; color: #245f8f; }
 .registry-field input, .registry-field select, .registry-search input, .registry-search select { background: var(--panel-bg, #fff); border: 1px solid var(--line, #dfe4ea); border-radius: 6px; box-sizing: border-box; color: var(--ink, #172033); font: inherit; height: 40px; padding: 7px 9px; width: 100%; }
 .registry-span-2 { grid-column: 1 / -1; }
 .registry-person-fields, .registry-selection-fields { border: 1px solid var(--line, #dfe4ea); border-radius: 7px; display: grid; gap: 10px; margin: 0; min-width: 0; padding: 11px; }
