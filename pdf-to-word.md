@@ -74,7 +74,7 @@ permalink: /pdf-to-word.html
   async function loadFormulaRecognizer() {
     if (state.recognizer) return state.recognizer; progress('加载数学公式模型', 42, '首次使用需要下载 TexTeller 模型，之后会由浏览器缓存。');
     const { pipeline, env, RawImage } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.2/+esm'); env.allowLocalModels = false; state.RawImage = RawImage;
-    state.recognizer = await pipeline('image-to-text', 'onnx-community/TexTeller3-ONNX', { device: 'wasm', dtype: 'q4' }); return state.recognizer;
+    state.recognizer = await pipeline('image-to-text', 'onnx-community/TexTeller-ONNX', { device: 'wasm', dtype: 'q4' }); return state.recognizer;
   }
   function cleanLatex(value) { return (value || '').replace(/^\s*\$+|\$+\s*$/g, '').replace(/^\\\[|\\\]$/g, '').replace(/\s+/g, ' ').trim(); }
   function toGrayscaleImage(canvas) {
