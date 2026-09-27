@@ -73,8 +73,8 @@ permalink: /pdf-to-word.html
   }
   async function loadFormulaRecognizer() {
     if (state.recognizer) return state.recognizer; progress('加载数学公式模型', 42, '首次使用需要下载 TexTeller 模型，之后会由浏览器缓存。');
-    const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.2/+esm'); env.allowLocalModels = false; const useWebGpu = Boolean(navigator.gpu);
-    state.recognizer = await pipeline('image-to-text', 'Ji-Ha/TexTeller3-ONNX-dynamic', { device: useWebGpu ? 'webgpu' : 'wasm', dtype: useWebGpu ? 'fp16' : 'int8' }); return state.recognizer;
+    const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.2/+esm'); env.allowLocalModels = false;
+    state.recognizer = await pipeline('image-to-text', 'onnx-community/texify-ONNX', { device: 'wasm', dtype: 'q8' }); return state.recognizer;
   }
   function cleanLatex(value) { return (value || '').replace(/^\s*\$+|\$+\s*$/g, '').replace(/^\\\[|\\\]$/g, '').replace(/\s+/g, ' ').trim(); }
   async function recognizeFormula(canvas, pageNumber) {
