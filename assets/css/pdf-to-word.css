@@ -3,6 +3,12 @@
 .pdf-word-hero span { color: var(--accent-2, #0f766e); display: block; font-size: 12px; font-weight: 800; text-transform: uppercase; }
 .pdf-word-hero h1 { font-size: 27px; margin: 4px 0 6px; }
 .pdf-word-hero p { color: var(--muted, #667085); margin: 0; }
+.pdf-word-model { align-items: center; background: #f7f9fc; border: 1px solid var(--line, #dfe4ea); border-left: 3px solid var(--accent-2, #0f766e); border-radius: 7px; display: flex; gap: 16px; justify-content: space-between; margin-bottom: 12px; padding: 13px 14px; }
+.pdf-word-model strong, .pdf-word-model span { display: block; }
+.pdf-word-model strong { font-size: 13px; margin-bottom: 3px; }
+.pdf-word-model span { color: var(--muted, #667085); font-size: 12px; }
+.pdf-word-model-actions { align-items: center; display: flex; flex: 0 0 auto; gap: 12px; }
+.pdf-word-model-actions a { color: var(--accent, #315c96); font-size: 12px; font-weight: 750; white-space: nowrap; }
 .pdf-word-upload { align-items: center; background: #edf8f5; border: 1px dashed rgba(15,118,110,.35); border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; padding: 16px 18px; }
 .pdf-word-upload strong, .pdf-word-upload span { display: block; }
 .pdf-word-upload span { color: var(--muted, #667085); font-size: 12px; }
@@ -35,4 +41,4 @@
 .pdf-word-preview { min-height: 38px; overflow-x: auto; padding: 8px 2px 2px; }
 .pdf-word-side-actions { display: flex; gap: 7px; margin-top: 10px; }
 .pdf-word-side-actions .pdf-word-button { flex: 1; }
-@media screen and (max-width: 780px) { .pdf-word-options, .pdf-word-workspace { grid-template-columns: 1fr; } .pdf-word-upload { align-items: stretch; flex-direction: column; gap: 10px; } }
+@media screen and (max-width: 780px) { .pdf-word-options, .pdf-word-workspace { grid-template-columns: 1fr; } .pdf-word-upload, .pdf-word-model { align-items: stretch; flex-direction: column; gap: 10px; } .pdf-word-model-actions { justify-content: space-between; } }

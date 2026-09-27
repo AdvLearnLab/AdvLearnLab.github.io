@@ -14,6 +14,10 @@ permalink: /pdf-to-word.html
     <h1>PDF 转可编辑 Word</h1>
     <p>正文转换为可编辑段落；数学公式经专用模型识别为 LaTeX，并写入 Word 原生公式对象。</p>
   </header>
+  <section class="pdf-word-model" aria-labelledby="pdf-word-model-title">
+    <div><strong id="pdf-word-model-title">首次使用：先加载公式模型</strong><span id="pdf-word-model-status">模型文件较大，建议先完成下载并缓存，再上传 PDF。</span></div>
+    <div class="pdf-word-model-actions"><a href="https://huggingface.co/onnx-community/TexTeller3-ONNX" target="_blank" rel="noopener">模型下载页</a><button id="pdf-word-preload" class="pdf-word-button" type="button">提前加载模型</button></div>
+  </section>
   <label class="pdf-word-upload">
     <span><strong>选择 PDF 文件</strong><span>文字型 PDF 直接解析；扫描页自动进行中英文 OCR。文件只在浏览器本地处理。</span></span>
     <input id="pdf-word-file" type="file" accept="application/pdf,.pdf">
@@ -38,6 +42,7 @@ permalink: /pdf-to-word.html
   const state = { file: null, pdf: null, pages: [], formulas: [], recognizer: null, RawImage: null };
   const elements = {
     file: document.querySelector('#pdf-word-file'), quality: document.querySelector('#pdf-word-quality'), convert: document.querySelector('#pdf-word-convert'),
+    preload: document.querySelector('#pdf-word-preload'), modelStatus: document.querySelector('#pdf-word-model-status'),
     progress: document.querySelector('#pdf-word-progress'), progressTitle: document.querySelector('#pdf-word-progress-title'), progressValue: document.querySelector('#pdf-word-progress-value'),
     progressBar: document.querySelector('#pdf-word-progress-bar'), progressDetail: document.querySelector('#pdf-word-progress-detail'), workspace: document.querySelector('#pdf-word-workspace'),
     pages: document.querySelector('#pdf-word-pages'), formulas: document.querySelector('#pdf-word-formulas'), copyAll: document.querySelector('#pdf-word-copy-all'), downloadTex: document.querySelector('#pdf-word-download-tex')
@@ -74,7 +79,8 @@ permalink: /pdf-to-word.html
   async function loadFormulaRecognizer() {
     if (state.recognizer) return state.recognizer; progress('加载数学公式模型', 42, '首次使用需要下载公式 OCR 模型，之后会由浏览器缓存。');
     const { pipeline, env, RawImage } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.2/+esm'); env.allowLocalModels = false; state.RawImage = RawImage;
-    let lastError; for (let attempt = 1; attempt <= 3; attempt++) { try { state.recognizer = await pipeline('image-to-text', 'onnx-community/TexTeller3-ONNX', { device: 'wasm', dtype: 'q4' }); return state.recognizer; } catch (error) { lastError = error; progress('重试加载公式模型', 42, `网络下载中断，正在进行第 ${attempt + 1} 次尝试...`); await new Promise((resolve) => setTimeout(resolve, 1200 * attempt)); } } throw lastError;
+    const reportDownload = (event) => { if (Number.isFinite(event?.progress)) progress('下载公式模型', event.progress, event.file ? `正在下载：${event.file}` : '正在下载模型文件...'); };
+    let lastError; for (let attempt = 1; attempt <= 3; attempt++) { try { state.recognizer = await pipeline('image-to-text', 'onnx-community/TexTeller3-ONNX', { device: 'wasm', dtype: 'q4', progress_callback: reportDownload }); return state.recognizer; } catch (error) { lastError = error; progress('重试加载公式模型', 42, `网络下载中断，正在进行第 ${Math.min(attempt + 1, 3)} 次尝试...`); await new Promise((resolve) => setTimeout(resolve, 1200 * attempt)); } } throw lastError;
   }
   function cleanLatex(value) { return (value || '').replace(/^\s*\$+|\$+\s*$/g, '').replace(/^\\\[|\\\]$/g, '').replace(/\s+/g, ' ').trim(); }
   function toGrayscaleImage(canvas) {
@@ -157,6 +163,12 @@ permalink: /pdf-to-word.html
     const anchor = document.createElement('a'); anchor.href = URL.createObjectURL(blob); anchor.download = `${state.file.name.replace(/\.pdf$/i, '')}-editable.docx`; anchor.click(); setTimeout(() => URL.revokeObjectURL(anchor.href), 3000); progress('Word 已生成', 100, '正文和公式均可在 Word 中继续编辑。'); elements.convert.disabled = false;
   }
   elements.file.addEventListener('change', async () => { const file = elements.file.files[0]; if (!file) return; state.file = file; elements.convert.disabled = true; try { await loadPdf(file); } catch (error) { console.error(error); progress('转换失败', 0, error.message || 'PDF 读取失败'); } });
+  elements.preload.addEventListener('click', async () => {
+    elements.preload.disabled = true; elements.file.disabled = true; elements.preload.textContent = '模型加载中...'; elements.modelStatus.textContent = '正在下载并初始化模型，请保持当前页面打开。';
+    try { await loadFormulaRecognizer(); elements.preload.textContent = '模型已缓存'; elements.modelStatus.textContent = '公式模型已就绪，现在可以上传 PDF。'; progress('公式模型已就绪', 100, '模型已缓存在当前浏览器中。'); }
+    catch (error) { console.error(error); elements.preload.disabled = false; elements.preload.textContent = '重新加载模型'; elements.modelStatus.textContent = '下载未完成，请检查网络后重新加载。'; progress('模型加载失败', 0, error.message || '模型下载失败'); }
+    finally { elements.file.disabled = false; }
+  });
   elements.quality.addEventListener('change', () => { if (state.file) loadPdf(state.file); }); elements.convert.addEventListener('click', exportDocx);
   elements.copyAll.addEventListener('click', () => navigator.clipboard.writeText(state.formulas.map((item) => item.latex).join('\n\n')));
   elements.downloadTex.addEventListener('click', () => { const blob = new Blob([state.formulas.map((item) => `\\[\n${item.latex}\n\\]`).join('\n\n')], { type: 'text/plain;charset=utf-8' }); const anchor = document.createElement('a'); anchor.href = URL.createObjectURL(blob); anchor.download = `${state.file?.name.replace(/\.pdf$/i, '') || 'formulas'}.tex`; anchor.click(); setTimeout(() => URL.revokeObjectURL(anchor.href), 2000); });
