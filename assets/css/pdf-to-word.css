@@ -7,9 +7,13 @@
 .pdf-word-upload strong, .pdf-word-upload span { display: block; }
 .pdf-word-upload span { color: var(--muted, #667085); font-size: 12px; }
 .pdf-word-upload input { max-width: 280px; }
-.pdf-word-options { align-items: end; background: var(--panel-bg, #fff); border: 1px solid var(--line, #dfe4ea); border-radius: 8px; display: grid; gap: 12px; grid-template-columns: minmax(220px, 1fr) minmax(150px, .5fr) auto; margin: 12px 0; padding: 13px; }
+.pdf-word-options { align-items: end; background: var(--panel-bg, #fff); border: 1px solid var(--line, #dfe4ea); border-radius: 8px; display: grid; gap: 12px; grid-template-columns: minmax(160px, .45fr) minmax(230px, 1fr) auto; margin: 12px 0; padding: 13px; }
 .pdf-word-field label { display: block; font-size: 12px; font-weight: 750; margin-bottom: 5px; }
 .pdf-word-field select { background: var(--panel-bg, #fff); border: 1px solid var(--line, #dfe4ea); border-radius: 6px; box-sizing: border-box; color: inherit; font: inherit; height: 40px; padding: 6px 8px; width: 100%; }
+.pdf-word-mode-note { display: flex; flex-direction: column; gap: 4px; min-height: 40px; justify-content: center; }
+.pdf-word-mode-note strong { font-size: 12px; }
+.pdf-word-mode-note span, #pdf-word-progress-detail { color: var(--muted, #667085); font-size: 12px; }
+#pdf-word-progress-detail { margin: 8px 0 0; }
 .pdf-word-button { background: var(--accent, #315c96); border: 1px solid var(--accent, #315c96); border-radius: 6px; color: #fff; cursor: pointer; font: inherit; font-size: 13px; font-weight: 750; height: 40px; padding: 0 14px; }
 .pdf-word-button:disabled { cursor: not-allowed; opacity: .5; }
 .pdf-word-progress { background: var(--panel-bg, #fff); border: 1px solid var(--line, #dfe4ea); border-radius: 8px; margin-bottom: 12px; padding: 12px; }
