@@ -9,6 +9,8 @@
 .pdf-word-model span { color: var(--muted, #667085); font-size: 12px; }
 .pdf-word-model-actions { align-items: center; display: flex; flex: 0 0 auto; gap: 12px; }
 .pdf-word-model-actions a { color: var(--accent, #315c96); font-size: 12px; font-weight: 750; white-space: nowrap; }
+.pdf-word-skip { align-items: center; color: var(--muted, #667085); cursor: pointer; display: inline-flex; font-size: 12px; gap: 4px; white-space: nowrap; }
+.pdf-word-skip input { accent-color: var(--accent, #315c96); margin: 0; }
 .pdf-word-upload { align-items: center; background: #edf8f5; border: 1px dashed rgba(15,118,110,.35); border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; padding: 16px 18px; }
 .pdf-word-upload strong, .pdf-word-upload span { display: block; }
 .pdf-word-upload span { color: var(--muted, #667085); font-size: 12px; }
