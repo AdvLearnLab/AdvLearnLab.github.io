@@ -94,6 +94,12 @@
   color: #245f8f;
 }
 
+.tool-mark-word {
+  background: #e8f1fb;
+  color: #245f8f;
+  font-size: 9px;
+}
+
 .tool-card h2 {
   color: var(--ink, #172033);
   font-size: 17px;

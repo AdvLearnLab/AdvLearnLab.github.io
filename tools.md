@@ -39,6 +39,15 @@ permalink: /tools.html
       </div>
     </a>
 
+    <a class="tool-card" href="{{ '/pdf-to-word.html' | relative_url }}">
+      <span class="tool-mark tool-mark-word">DOCX</span>
+      <div>
+        <h2>PDF 转 Word</h2>
+        <p>高保真或可编辑转换 PDF，并在侧栏提取公式 LaTeX。</p>
+        <span class="tool-link">打开工具 →</span>
+      </div>
+    </a>
+
     <a class="tool-card" href="{{ '/admissions-registry.html' | relative_url }}">
       <span class="tool-mark tool-mark-registry">REG</span>
       <div>

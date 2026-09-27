@@ -39,14 +39,18 @@
   {% if page.permalink == '/admissions-registry.html' or page.permalink == '/my-admissions.html' %}
   <link rel="stylesheet" href="./assets/css/admissions-registry.css?v=20260924-7">
   {% endif %}
-  {% if page.permalink == '/tools.html' or page.permalink == '/pdf-editor.html' or page.permalink == '/image-editor.html' or page.permalink == '/formula-extractor.html' or page.permalink == '/admissions-registry.html' or page.permalink == '/my-admissions.html' %}
+  {% if page.permalink == '/pdf-to-word.html' %}
+  <link rel="stylesheet" href="./assets/css/pdf-to-word.css?v=20260927-1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  {% endif %}
+  {% if page.permalink == '/tools.html' or page.permalink == '/pdf-editor.html' or page.permalink == '/pdf-to-word.html' or page.permalink == '/image-editor.html' or page.permalink == '/formula-extractor.html' or page.permalink == '/admissions-registry.html' or page.permalink == '/my-admissions.html' %}
   <link rel="stylesheet" href="./assets/css/standalone-tools.css?v=20260924-1">
   {% endif %}
 
 </head>
 
 {% assign standalone_tool_page = false %}
-{% if page.permalink == '/tools.html' or page.permalink == '/pdf-editor.html' or page.permalink == '/image-editor.html' or page.permalink == '/formula-extractor.html' or page.permalink == '/admissions-registry.html' or page.permalink == '/my-admissions.html' %}
+{% if page.permalink == '/tools.html' or page.permalink == '/pdf-editor.html' or page.permalink == '/pdf-to-word.html' or page.permalink == '/image-editor.html' or page.permalink == '/formula-extractor.html' or page.permalink == '/admissions-registry.html' or page.permalink == '/my-admissions.html' %}
 {% assign standalone_tool_page = true %}
 {% endif %}
 <body{% if standalone_tool_page %} class="standalone-tool-page{% if page.permalink == '/admissions-registry.html' or page.permalink == '/my-admissions.html' %} standalone-registry-page{% endif %}"{% endif %}>
@@ -175,7 +179,7 @@
     <main class="content-shell">
       <section class="content-panel">
 
-      {% if page.permalink == '/tools.html' or page.permalink == '/pdf-editor.html' or page.permalink == '/image-editor.html' or page.permalink == '/formula-extractor.html' %}
+      {% if page.permalink == '/tools.html' or page.permalink == '/pdf-editor.html' or page.permalink == '/pdf-to-word.html' or page.permalink == '/image-editor.html' or page.permalink == '/formula-extractor.html' %}
       <nav class="standalone-tool-nav" aria-label="Tool navigation">
         <a href="{{ '/' | relative_url }}">首页</a>
         <a href="{{ '/tools.html' | relative_url }}"{% if page.permalink == '/tools.html' %} class="active"{% endif %}>Tools</a>

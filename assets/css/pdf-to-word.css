@@ -1,0 +1,34 @@
+.pdf-word-tool { color: var(--ink, #172033); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.pdf-word-hero { border-bottom: 1px solid var(--line, #dfe4ea); margin-bottom: 16px; padding-bottom: 14px; }
+.pdf-word-hero span { color: var(--accent-2, #0f766e); display: block; font-size: 12px; font-weight: 800; text-transform: uppercase; }
+.pdf-word-hero h1 { font-size: 27px; margin: 4px 0 6px; }
+.pdf-word-hero p { color: var(--muted, #667085); margin: 0; }
+.pdf-word-upload { align-items: center; background: #edf8f5; border: 1px dashed rgba(15,118,110,.35); border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; padding: 16px 18px; }
+.pdf-word-upload strong, .pdf-word-upload span { display: block; }
+.pdf-word-upload span { color: var(--muted, #667085); font-size: 12px; }
+.pdf-word-upload input { max-width: 280px; }
+.pdf-word-options { align-items: end; background: var(--panel-bg, #fff); border: 1px solid var(--line, #dfe4ea); border-radius: 8px; display: grid; gap: 12px; grid-template-columns: minmax(220px, 1fr) minmax(150px, .5fr) auto; margin: 12px 0; padding: 13px; }
+.pdf-word-field label { display: block; font-size: 12px; font-weight: 750; margin-bottom: 5px; }
+.pdf-word-field select { background: var(--panel-bg, #fff); border: 1px solid var(--line, #dfe4ea); border-radius: 6px; box-sizing: border-box; color: inherit; font: inherit; height: 40px; padding: 6px 8px; width: 100%; }
+.pdf-word-button { background: var(--accent, #315c96); border: 1px solid var(--accent, #315c96); border-radius: 6px; color: #fff; cursor: pointer; font: inherit; font-size: 13px; font-weight: 750; height: 40px; padding: 0 14px; }
+.pdf-word-button:disabled { cursor: not-allowed; opacity: .5; }
+.pdf-word-progress { background: var(--panel-bg, #fff); border: 1px solid var(--line, #dfe4ea); border-radius: 8px; margin-bottom: 12px; padding: 12px; }
+.pdf-word-progress[hidden], .pdf-word-workspace[hidden] { display: none; }
+.pdf-word-progress-head { display: flex; font-size: 12px; justify-content: space-between; }
+.pdf-word-track { background: #edf0f3; border-radius: 99px; height: 7px; margin-top: 8px; overflow: hidden; }
+.pdf-word-track span { background: var(--accent, #315c96); display: block; height: 100%; transition: width .2s ease; width: 0; }
+.pdf-word-workspace { display: grid; gap: 14px; grid-template-columns: minmax(0, 1.45fr) minmax(280px, .55fr); }
+.pdf-word-panel { background: var(--panel-bg, #fff); border: 1px solid var(--line, #dfe4ea); border-radius: 8px; min-width: 0; padding: 14px; }
+.pdf-word-panel h2 { font-size: 17px; margin: 0 0 10px; }
+.pdf-word-pages { background: #e9edf1; border-radius: 6px; display: grid; gap: 12px; max-height: 680px; overflow-y: auto; padding: 14px; }
+.pdf-word-pages canvas { background: #fff; box-shadow: 0 4px 14px rgba(20,30,50,.12); height: auto; margin: 0 auto; max-width: 100%; }
+.pdf-word-formulas { display: grid; gap: 9px; max-height: 590px; overflow-y: auto; }
+.pdf-word-empty { color: var(--muted, #667085); font-size: 12.5px; padding: 24px 8px; text-align: center; }
+.pdf-word-formula { border: 1px solid var(--line, #dfe4ea); border-radius: 7px; padding: 10px; }
+.pdf-word-formula-head { color: var(--muted, #667085); display: flex; font-size: 11px; justify-content: space-between; margin-bottom: 7px; }
+.pdf-word-copy { background: transparent; border: 0; color: var(--accent, #315c96); cursor: pointer; font: inherit; font-weight: 750; padding: 0; }
+.pdf-word-latex { background: #f6f8fa; border: 0; border-radius: 5px; box-sizing: border-box; color: #243044; font: 12px/1.5 Consolas, monospace; min-height: 58px; padding: 7px; resize: vertical; width: 100%; }
+.pdf-word-preview { min-height: 38px; overflow-x: auto; padding: 8px 2px 2px; }
+.pdf-word-side-actions { display: flex; gap: 7px; margin-top: 10px; }
+.pdf-word-side-actions .pdf-word-button { flex: 1; }
+@media screen and (max-width: 780px) { .pdf-word-options, .pdf-word-workspace { grid-template-columns: 1fr; } .pdf-word-upload { align-items: stretch; flex-direction: column; gap: 10px; } }
