@@ -39,7 +39,7 @@ permalink: /pdf-to-word.html
 
 <script type="module">
 (() => {
-  const state = { file: null, pdf: null, pages: [], formulas: [], formulaWorker: null, workerRequests: new Map(), nextRequestId: 1, workerReady: false };
+  const state = { file: null, pdf: null, pages: [], formulas: [], formulaWorker: null, workerRequests: new Map(), nextRequestId: 1, workerReady: false, formulaBackend: '' };
   const elements = {
     file: document.querySelector('#pdf-word-file'), quality: document.querySelector('#pdf-word-quality'), convert: document.querySelector('#pdf-word-convert'),
     preload: document.querySelector('#pdf-word-preload'), modelStatus: document.querySelector('#pdf-word-model-status'), skipFormulas: document.querySelector('#pdf-word-skip-formulas'),
@@ -78,16 +78,16 @@ permalink: /pdf-to-word.html
   }
   function getFormulaWorker() {
     if (state.formulaWorker) return state.formulaWorker;
-    const source = `let recognizer=null,RawImage=null;async function load(id){if(recognizer)return;const module=await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.2/+esm');RawImage=module.RawImage;module.env.allowLocalModels=false;let lastError;for(let attempt=1;attempt<=3;attempt++){try{recognizer=await module.pipeline('image-to-text','onnx-community/TexTeller3-ONNX',{device:'wasm',dtype:'q4',progress_callback:(event)=>self.postMessage({type:'progress',id,event})});return}catch(error){lastError=error;self.postMessage({type:'retry',id,attempt:Math.min(attempt+1,3)});await new Promise((resolve)=>setTimeout(resolve,1200*attempt))}}throw lastError}self.onmessage=async({data})=>{const{id,type}=data;try{await load(id);if(type==='load'){self.postMessage({type:'result',id,value:true});return}const image=new RawImage(new Uint8ClampedArray(data.pixels),data.width,data.height,1);const output=await recognizer(image,{max_new_tokens:384});self.postMessage({type:'result',id,value:output?.[0]?.generated_text||output?.generated_text||''})}catch(error){self.postMessage({type:'error',id,message:error?.message||String(error)})}};`;
+    const source = `let recognizer=null,RawImage=null,backend='';const report=(id)=>(event)=>self.postMessage({type:'progress',id,event});async function load(id){if(recognizer)return backend;const module=await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.2/+esm');RawImage=module.RawImage;module.env.allowLocalModels=false;if(self.navigator?.gpu){try{recognizer=await module.pipeline('image-to-text','onnx-community/TexTeller3-ONNX',{device:'webgpu',dtype:'q4f16',progress_callback:report(id)});backend='WebGPU';self.postMessage({type:'backend',id,value:backend});return backend}catch(error){recognizer=null;self.postMessage({type:'fallback',id})}}let lastError;for(let attempt=1;attempt<=3;attempt++){try{recognizer=await module.pipeline('image-to-text','onnx-community/TexTeller3-ONNX',{device:'wasm',dtype:'q4',progress_callback:report(id)});backend='WASM CPU';self.postMessage({type:'backend',id,value:backend});return backend}catch(error){lastError=error;self.postMessage({type:'retry',id,attempt:Math.min(attempt+1,3)});await new Promise((resolve)=>setTimeout(resolve,1200*attempt))}}throw lastError}self.onmessage=async({data})=>{const{id,type}=data;try{const activeBackend=await load(id);if(type==='load'){self.postMessage({type:'result',id,value:activeBackend});return}const image=new RawImage(new Uint8ClampedArray(data.pixels),data.width,data.height,1);const output=await recognizer(image,{max_new_tokens:192});self.postMessage({type:'result',id,value:output?.[0]?.generated_text||output?.generated_text||''})}catch(error){self.postMessage({type:'error',id,message:error?.message||String(error)})}};`;
     const url = URL.createObjectURL(new Blob([source], { type: 'text/javascript' })); const worker = new Worker(url, { type: 'module' }); URL.revokeObjectURL(url);
-    worker.onmessage = ({ data }) => { if (data.type === 'progress') { if (Number.isFinite(data.event?.progress)) progress('后台下载公式模型', data.event.progress, data.event.file ? `正在下载：${data.event.file}` : '正在下载模型文件...'); return; } if (data.type === 'retry') { progress('重试加载公式模型', 42, `网络中断，正在进行第 ${data.attempt} 次尝试...`); return; } const request = state.workerRequests.get(data.id); if (!request) return; clearTimeout(request.timer); state.workerRequests.delete(data.id); data.type === 'error' ? request.reject(new Error(data.message)) : request.resolve(data.value); };
+    worker.onmessage = ({ data }) => { if (data.type === 'progress') { if (Number.isFinite(data.event?.progress)) progress('后台下载公式模型', data.event.progress, data.event.file ? `正在下载：${data.event.file}` : '正在下载模型文件...'); return; } if (data.type === 'backend') { state.formulaBackend = data.value; elements.modelStatus.textContent = `公式模型已启用 ${data.value} 加速。`; return; } if (data.type === 'fallback') { elements.modelStatus.textContent = '当前浏览器无法启用 WebGPU，正在切换 CPU 模式。'; return; } if (data.type === 'retry') { progress('重试加载公式模型', 42, `网络中断，正在进行第 ${data.attempt} 次尝试...`); return; } const request = state.workerRequests.get(data.id); if (!request) return; clearTimeout(request.timer); state.workerRequests.delete(data.id); data.type === 'error' ? request.reject(new Error(data.message)) : request.resolve(data.value); };
     worker.onerror = (event) => { state.workerRequests.forEach((request) => { clearTimeout(request.timer); request.reject(new Error(event.message || '公式模型后台线程异常')); }); state.workerRequests.clear(); state.formulaWorker = null; };
     state.formulaWorker = worker; return worker;
   }
   function formulaWorkerRequest(type, payload = {}, transfer = []) {
     const id = state.nextRequestId++; const worker = getFormulaWorker(); return new Promise((resolve, reject) => { const timer = setTimeout(() => { state.workerRequests.delete(id); worker.terminate(); state.formulaWorker = null; state.workerReady = false; reject(new Error('公式模型加载超时，请重试或选择“仅转换文字”')); }, 300000); state.workerRequests.set(id, { resolve, reject, timer }); worker.postMessage({ id, type, ...payload }, transfer); });
   }
-  async function loadFormulaRecognizer() { if (state.workerReady) return true; progress('后台加载数学公式模型', 2, '页面可以继续操作，模型将在后台下载。'); await formulaWorkerRequest('load'); state.workerReady = true; return true; }
+  async function loadFormulaRecognizer() { if (state.workerReady) return state.formulaBackend; progress('后台加载数学公式模型', 2, '正在检测 WebGPU，页面仍可继续操作。'); state.formulaBackend = await formulaWorkerRequest('load'); state.workerReady = true; return state.formulaBackend; }
   function cleanLatex(value) { return (value || '').replace(/^\s*\$+|\$+\s*$/g, '').replace(/^\\\[|\\\]$/g, '').replace(/\s+/g, ' ').trim(); }
   function toGrayscaleImage(canvas) {
     const rgba = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data; const gray = new Uint8ClampedArray(canvas.width * canvas.height);
@@ -121,7 +121,7 @@ permalink: /pdf-to-word.html
       const canvas = document.createElement('canvas'); canvas.width = Math.ceil(viewport.width); canvas.height = Math.ceil(viewport.height); await page.render({ canvasContext: canvas.getContext('2d', { alpha: false }), viewport }).promise; elements.pages.appendChild(canvas);
       const text = await page.getTextContent(); let lines = groupPdfLines(text.items, viewport, pdfjs); if (lines.length < 2) lines = await ocrScannedPage(canvas); const blocks = [];
       for (const line of lines) {
-        if (!elements.skipFormulas.checked && looksMathematical(line.text) && state.formulas.length < 60) {
+        if (!elements.skipFormulas.checked && looksMathematical(line.text) && state.formulas.length < 30) {
           try { const formula = await recognizeFormula(cropLine(canvas, line), number); if (formula) { blocks.push({ type: 'formula', formula }); continue; } } catch (error) { console.warn('Formula OCR failed', error); }
         }
         blocks.push({ type: 'text', text: line.text });
@@ -171,7 +171,7 @@ permalink: /pdf-to-word.html
   elements.file.addEventListener('change', async () => { const file = elements.file.files[0]; if (!file) return; state.file = file; elements.convert.disabled = true; try { await loadPdf(file); } catch (error) { console.error(error); progress('转换失败', 0, error.message || 'PDF 读取失败'); } });
   elements.preload.addEventListener('click', async () => {
     elements.preload.disabled = true; elements.preload.textContent = '后台加载中...'; elements.modelStatus.textContent = '模型在后台下载，页面仍可操作；请保持当前页面打开。';
-    try { await loadFormulaRecognizer(); elements.preload.textContent = '模型已缓存'; elements.modelStatus.textContent = '公式模型已就绪，现在可以上传 PDF。'; progress('公式模型已就绪', 100, '模型已缓存在当前浏览器中。'); }
+    try { const backend = await loadFormulaRecognizer(); elements.preload.textContent = '模型已缓存'; elements.modelStatus.textContent = `公式模型已就绪（${backend}），现在可以上传 PDF。`; progress('公式模型已就绪', 100, `模型已缓存，推理后端：${backend}。`); }
     catch (error) { console.error(error); elements.preload.disabled = false; elements.preload.textContent = '重新加载模型'; elements.modelStatus.textContent = '下载未完成，请检查网络后重新加载。'; progress('模型加载失败', 0, error.message || '模型下载失败'); }
   });
   elements.quality.addEventListener('change', () => { if (state.file) loadPdf(state.file); }); elements.convert.addEventListener('click', exportDocx);
