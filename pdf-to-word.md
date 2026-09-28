@@ -72,7 +72,7 @@ permalink: /pdf-to-word.html
     });
     const lines = []; rows.forEach((row) => { row.items.sort((a, b) => a.x - b.x); let segment = [];
       const flush = () => { if (!segment.length) return; const x = segment[0].x; const end = Math.max(...segment.map((item) => item.x + item.width)); const text = sanitizeText(segment.map((item) => item.text).join(' ').replace(/\s+/g, ' ')); if (text) lines.push({ y: row.y, x, width: end - x, items: segment, text }); segment = []; };
-      row.items.forEach((item) => { const previous = segment.at(-1); if (previous && item.x - (previous.x + previous.width) > viewport.width * .075) flush(); segment.push(item); }); flush();
+      row.items.forEach((item) => { const previous = segment.at(-1); const gap = previous ? item.x - (previous.x + previous.width) : 0; const crossesColumns = previous && previous.x < viewport.width / 2 && item.x >= viewport.width / 2 && gap > 8; if (previous && (gap > viewport.width * .06 || crossesColumns)) flush(); segment.push(item); }); flush();
     });
     lines.sort((a, b) => a.y - b.y || a.x - b.x); const midpoint = viewport.width / 2; const pairedRows = lines.filter((line) => line.x < midpoint).map((line) => line.y).filter((y) => lines.some((other) => other.x >= midpoint && Math.abs(other.y - y) <= 5));
     const columnStart = pairedRows.find((y) => pairedRows.filter((next) => next >= y && next <= y + viewport.height * .18).length >= 4); if (columnStart === undefined) return lines;
