@@ -25,27 +25,28 @@ permalink: /pdf-to-word.html
   <div class="pdf-word-options">
     <div class="pdf-word-field"><label for="pdf-word-quality">识别清晰度</label><select id="pdf-word-quality"><option value="1.6">标准</option><option value="2" selected>高清</option><option value="2.5">超清</option></select></div>
     <div class="pdf-word-mode-note"><strong>输出格式</strong><span>可编辑文字 + Word 原生公式</span></div>
-    <button id="pdf-word-convert" class="pdf-word-button" type="button" disabled>转换并下载 Word</button>
+    <button id="pdf-word-convert" class="pdf-word-button" type="button" disabled>转换所选页面</button>
   </div>
   <div id="pdf-word-progress" class="pdf-word-progress" hidden>
     <div class="pdf-word-progress-head"><strong id="pdf-word-progress-title">准备转换</strong><span id="pdf-word-progress-value">0%</span></div>
     <div class="pdf-word-track"><span id="pdf-word-progress-bar"></span></div><p id="pdf-word-progress-detail"></p>
   </div>
   <div id="pdf-word-workspace" class="pdf-word-workspace" hidden>
-    <section class="pdf-word-panel"><h2>页面预览</h2><div id="pdf-word-pages" class="pdf-word-pages"></div></section>
+    <section class="pdf-word-panel"><div class="pdf-word-pages-head"><h2>选择转换页面</h2><span id="pdf-word-selection-count">尚未选择 PDF</span></div><div class="pdf-word-page-tools"><button id="pdf-word-select-all" type="button">全选</button><button id="pdf-word-select-none" type="button">清空</button><input id="pdf-word-page-range" type="text" inputmode="numeric" placeholder="例如 1,3,5-8"><button id="pdf-word-apply-range" type="button">应用页码</button></div><div id="pdf-word-pages" class="pdf-word-pages"></div></section>
     <aside class="pdf-word-panel"><h2>数学公式 LaTeX</h2><div id="pdf-word-formulas" class="pdf-word-formulas"><div class="pdf-word-empty">正在定位并识别数学公式...</div></div><div class="pdf-word-side-actions"><button id="pdf-word-copy-all" class="pdf-word-button" type="button">复制全部</button><button id="pdf-word-download-tex" class="pdf-word-button" type="button">下载 .tex</button></div></aside>
   </div>
 </div>
 
 <script type="module">
 (() => {
-  const state = { file: null, pdf: null, pages: [], formulas: [], formulaWorker: null, workerRequests: new Map(), nextRequestId: 1, workerReady: false, formulaBackend: '' };
+  const state = { file: null, pdf: null, pages: [], formulas: [], selectedPages: new Set(), formulaWorker: null, workerRequests: new Map(), nextRequestId: 1, workerReady: false, formulaBackend: '' };
   const elements = {
     file: document.querySelector('#pdf-word-file'), quality: document.querySelector('#pdf-word-quality'), convert: document.querySelector('#pdf-word-convert'),
     preload: document.querySelector('#pdf-word-preload'), modelStatus: document.querySelector('#pdf-word-model-status'), skipFormulas: document.querySelector('#pdf-word-skip-formulas'),
     progress: document.querySelector('#pdf-word-progress'), progressTitle: document.querySelector('#pdf-word-progress-title'), progressValue: document.querySelector('#pdf-word-progress-value'),
     progressBar: document.querySelector('#pdf-word-progress-bar'), progressDetail: document.querySelector('#pdf-word-progress-detail'), workspace: document.querySelector('#pdf-word-workspace'),
-    pages: document.querySelector('#pdf-word-pages'), formulas: document.querySelector('#pdf-word-formulas'), copyAll: document.querySelector('#pdf-word-copy-all'), downloadTex: document.querySelector('#pdf-word-download-tex')
+    pages: document.querySelector('#pdf-word-pages'), selectionCount: document.querySelector('#pdf-word-selection-count'), selectAll: document.querySelector('#pdf-word-select-all'), selectNone: document.querySelector('#pdf-word-select-none'), pageRange: document.querySelector('#pdf-word-page-range'), applyRange: document.querySelector('#pdf-word-apply-range'),
+    formulas: document.querySelector('#pdf-word-formulas'), copyAll: document.querySelector('#pdf-word-copy-all'), downloadTex: document.querySelector('#pdf-word-download-tex')
   };
   let pdfjsPromise;
   async function getPdfJs() {
@@ -113,22 +114,37 @@ permalink: /pdf-to-word.html
       textarea.addEventListener('input', draw); card.querySelector('button').addEventListener('click', () => navigator.clipboard.writeText(textarea.value)); draw(); elements.formulas.appendChild(card);
     });
   }
+  function updateSelection() {
+    const count = state.selectedPages.size; const total = state.pdf?.numPages || 0; elements.selectionCount.textContent = `已选择 ${count} / ${total} 页`; elements.convert.disabled = count === 0;
+    elements.pages.querySelectorAll('.pdf-word-page-card').forEach((card) => card.classList.toggle('is-selected', card.querySelector('input').checked));
+  }
+  function parsePageRange(value, total) {
+    const selected = new Set(); value.split(/[，,\s]+/).filter(Boolean).forEach((part) => { const match = part.match(/^(\d+)(?:-(\d+))?$/); if (!match) return; let start = Number(match[1]); let end = Number(match[2] || match[1]); if (start > end) [start, end] = [end, start]; for (let page = Math.max(1, start); page <= Math.min(total, end); page++) selected.add(page); }); return selected;
+  }
   async function loadPdf(file) {
-    const pdfjs = await getPdfJs(); progress('读取 PDF', 3); state.pdf = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
-    state.pages = []; state.formulas = []; elements.pages.innerHTML = ''; elements.workspace.hidden = false; const scale = Number(elements.quality.value);
+    const pdfjs = await getPdfJs(); progress('拆分 PDF 页面', 3, '正在生成页面缩略图...'); state.pdf = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
+    state.pages = []; state.formulas = []; state.selectedPages = new Set(); elements.pages.innerHTML = ''; elements.workspace.hidden = false; elements.formulas.innerHTML = '<div class="pdf-word-empty">转换后将在这里显示所选页面中的数学公式。</div>';
     for (let number = 1; number <= state.pdf.numPages; number++) {
-      progress(`解析第 ${number} / ${state.pdf.numPages} 页`, 5 + number / state.pdf.numPages * 30); const page = await state.pdf.getPage(number); const viewport = page.getViewport({ scale });
-      const canvas = document.createElement('canvas'); canvas.width = Math.ceil(viewport.width); canvas.height = Math.ceil(viewport.height); await page.render({ canvasContext: canvas.getContext('2d', { alpha: false }), viewport }).promise; elements.pages.appendChild(canvas);
+      progress(`拆分第 ${number} / ${state.pdf.numPages} 页`, number / state.pdf.numPages * 100, '只生成缩略图，尚未执行正文和公式识别。'); const page = await state.pdf.getPage(number); const viewport = page.getViewport({ scale: .42 });
+      const canvas = document.createElement('canvas'); canvas.width = Math.ceil(viewport.width); canvas.height = Math.ceil(viewport.height); await page.render({ canvasContext: canvas.getContext('2d', { alpha: false }), viewport }).promise;
+      const card = document.createElement('label'); card.className = 'pdf-word-page-card is-selected'; const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.checked = true; checkbox.value = number; const caption = document.createElement('span'); caption.textContent = `第 ${number} 页`; card.append(checkbox, canvas, caption); elements.pages.appendChild(card); state.selectedPages.add(number);
+      checkbox.addEventListener('change', () => { checkbox.checked ? state.selectedPages.add(number) : state.selectedPages.delete(number); updateSelection(); });
+    }
+    updateSelection(); progress('页面拆分完成', 100, '请选择需要转换的页面，再点击“转换所选页面”。');
+  }
+  async function parseSelectedPages() {
+    const pdfjs = await getPdfJs(); const selected = [...state.selectedPages].sort((a, b) => a - b); state.pages = []; state.formulas = []; const scale = Number(elements.quality.value);
+    for (let index = 0; index < selected.length; index++) {
+      const number = selected[index]; progress(`转换第 ${number} 页`, index / selected.length * 72, `正在处理所选页面 ${index + 1} / ${selected.length}`); const page = await state.pdf.getPage(number); const viewport = page.getViewport({ scale });
+      const canvas = document.createElement('canvas'); canvas.width = Math.ceil(viewport.width); canvas.height = Math.ceil(viewport.height); await page.render({ canvasContext: canvas.getContext('2d', { alpha: false }), viewport }).promise;
       const text = await page.getTextContent(); let lines = groupPdfLines(text.items, viewport, pdfjs); if (lines.length < 2) lines = await ocrScannedPage(canvas); const blocks = [];
       for (const line of lines) {
-        if (!elements.skipFormulas.checked && looksMathematical(line.text) && state.formulas.length < 30) {
-          try { const formula = await recognizeFormula(cropLine(canvas, line), number); if (formula) { blocks.push({ type: 'formula', formula }); continue; } } catch (error) { console.warn('Formula OCR failed', error); }
-        }
+        if (!elements.skipFormulas.checked && looksMathematical(line.text) && state.formulas.length < 30) { try { const formula = await recognizeFormula(cropLine(canvas, line), number); if (formula) { blocks.push({ type: 'formula', formula }); continue; } } catch (error) { console.warn('Formula OCR failed', error); } }
         blocks.push({ type: 'text', text: line.text });
       }
       state.pages.push({ number, blocks });
     }
-    renderFormulas(); progress('结构化解析完成', 100, `正文可编辑，识别到 ${state.formulas.length} 条数学公式。`); elements.convert.disabled = false;
+    renderFormulas(); progress('所选页面解析完成', 74, `已解析 ${selected.length} 页，识别到 ${state.formulas.length} 条数学公式。`);
   }
   const xmlEscape = (value) => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const commandMap = { alpha:'α', beta:'β', gamma:'γ', delta:'δ', epsilon:'ε', theta:'θ', lambda:'λ', mu:'μ', pi:'π', rho:'ρ', sigma:'σ', tau:'τ', phi:'φ', omega:'ω', Gamma:'Γ', Delta:'Δ', Lambda:'Λ', Sigma:'Σ', Phi:'Φ', Omega:'Ω', times:'×', cdot:'·', div:'÷', pm:'±', le:'≤', leq:'≤', ge:'≥', geq:'≥', neq:'≠', approx:'≈', infty:'∞', partial:'∂', nabla:'∇', sum:'∑', prod:'∏', int:'∫', to:'→' };
@@ -168,13 +184,17 @@ permalink: /pdf-to-word.html
     progress('写入 Word 原生公式', 76, '正在把 LaTeX 转换为可编辑 OMML 公式对象...'); const blob = await injectWordEquations(await Packer.toBlob(doc));
     const anchor = document.createElement('a'); anchor.href = URL.createObjectURL(blob); anchor.download = `${state.file.name.replace(/\.pdf$/i, '')}-editable.docx`; anchor.click(); setTimeout(() => URL.revokeObjectURL(anchor.href), 3000); progress('Word 已生成', 100, '正文和公式均可在 Word 中继续编辑。'); elements.convert.disabled = false;
   }
+  async function convertSelectedPages() { if (!state.selectedPages.size) return; elements.convert.disabled = true; try { await parseSelectedPages(); await exportDocx(); } catch (error) { console.error(error); progress('转换失败', 0, error.message || '所选页面转换失败'); elements.convert.disabled = false; } }
   elements.file.addEventListener('change', async () => { const file = elements.file.files[0]; if (!file) return; state.file = file; elements.convert.disabled = true; try { await loadPdf(file); } catch (error) { console.error(error); progress('转换失败', 0, error.message || 'PDF 读取失败'); } });
   elements.preload.addEventListener('click', async () => {
     elements.preload.disabled = true; elements.preload.textContent = '后台加载中...'; elements.modelStatus.textContent = '模型在后台下载，页面仍可操作；请保持当前页面打开。';
     try { const backend = await loadFormulaRecognizer(); elements.preload.textContent = '模型已缓存'; elements.modelStatus.textContent = `公式模型已就绪（${backend}），现在可以上传 PDF。`; progress('公式模型已就绪', 100, `模型已缓存，推理后端：${backend}。`); }
     catch (error) { console.error(error); elements.preload.disabled = false; elements.preload.textContent = '重新加载模型'; elements.modelStatus.textContent = '下载未完成，请检查网络后重新加载。'; progress('模型加载失败', 0, error.message || '模型下载失败'); }
   });
-  elements.quality.addEventListener('change', () => { if (state.file) loadPdf(state.file); }); elements.convert.addEventListener('click', exportDocx);
+  elements.selectAll.addEventListener('click', () => { state.selectedPages = new Set(Array.from({ length: state.pdf?.numPages || 0 }, (_, index) => index + 1)); elements.pages.querySelectorAll('input').forEach((input) => { input.checked = true; }); updateSelection(); });
+  elements.selectNone.addEventListener('click', () => { state.selectedPages.clear(); elements.pages.querySelectorAll('input').forEach((input) => { input.checked = false; }); updateSelection(); });
+  elements.applyRange.addEventListener('click', () => { if (!state.pdf) return; state.selectedPages = parsePageRange(elements.pageRange.value, state.pdf.numPages); elements.pages.querySelectorAll('input').forEach((input) => { input.checked = state.selectedPages.has(Number(input.value)); }); updateSelection(); });
+  elements.pageRange.addEventListener('keydown', (event) => { if (event.key === 'Enter') elements.applyRange.click(); }); elements.convert.addEventListener('click', convertSelectedPages);
   elements.copyAll.addEventListener('click', () => navigator.clipboard.writeText(state.formulas.map((item) => item.latex).join('\n\n')));
   elements.downloadTex.addEventListener('click', () => { const blob = new Blob([state.formulas.map((item) => `\\[\n${item.latex}\n\\]`).join('\n\n')], { type: 'text/plain;charset=utf-8' }); const anchor = document.createElement('a'); anchor.href = URL.createObjectURL(blob); anchor.download = `${state.file?.name.replace(/\.pdf$/i, '') || 'formulas'}.tex`; anchor.click(); setTimeout(() => URL.revokeObjectURL(anchor.href), 2000); });
 })();
