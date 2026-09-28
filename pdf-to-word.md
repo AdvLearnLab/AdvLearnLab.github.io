@@ -62,6 +62,7 @@ permalink: /pdf-to-word.html
     const operators = (value.match(/[=<>≤≥≠≈∑∏∫√±×÷^_{}()[\]]/g) || []).length; const greek = (value.match(/[α-ωΑ-Ω]/g) || []).length;
     const words = (value.match(/[A-Za-z]{5,}/g) || []).length; return operators + greek >= 2 || ((/[=∑∫√]/.test(value)) && words <= 3);
   }
+  function sanitizeText(value) { return String(value || '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F]/g, '').replace(/\u00ad/g, '').trim(); }
   function groupPdfLines(items, viewport, pdfjs) {
     const rows = [];
     items.forEach((item) => {
@@ -69,7 +70,12 @@ permalink: /pdf-to-word.html
       let row = rows.find((candidate) => Math.abs(candidate.y - y) <= 4); if (!row) { row = { y, items: [] }; rows.push(row); }
       row.items.push({ text: item.str, x: point[4], y, width: Math.max(2, item.width * viewport.scale), height: Math.max(10, Math.hypot(point[2], point[3])) });
     });
-    return rows.sort((a, b) => a.y - b.y).map((row) => { row.items.sort((a, b) => a.x - b.x); row.text = row.items.map((item) => item.text).join(' ').replace(/\s+/g, ' ').trim(); return row; }).filter((row) => row.text);
+    const lines = []; rows.forEach((row) => { row.items.sort((a, b) => a.x - b.x); let segment = [];
+      const flush = () => { if (!segment.length) return; const x = segment[0].x; const end = Math.max(...segment.map((item) => item.x + item.width)); const text = sanitizeText(segment.map((item) => item.text).join(' ').replace(/\s+/g, ' ')); if (text) lines.push({ y: row.y, x, width: end - x, items: segment, text }); segment = []; };
+      row.items.forEach((item) => { const previous = segment.at(-1); if (previous && item.x - (previous.x + previous.width) > viewport.width * .075) flush(); segment.push(item); }); flush();
+    });
+    const ordered = []; let band = []; const flushBand = () => { if (!band.length) return; const midpoint = viewport.width / 2; const left = band.filter((line) => line.x < midpoint).sort((a, b) => a.y - b.y || a.x - b.x); const right = band.filter((line) => line.x >= midpoint).sort((a, b) => a.y - b.y || a.x - b.x); ordered.push(...left, ...right); band = []; };
+    lines.sort((a, b) => a.y - b.y || a.x - b.x).forEach((line) => { if (line.width > viewport.width * .68) { flushBand(); ordered.push(line); } else band.push(line); }); flushBand(); return ordered;
   }
   function cropLine(canvas, line) {
     const minX = Math.max(0, Math.min(...line.items.map((item) => item.x)) - 20); const maxX = Math.min(canvas.width, Math.max(...line.items.map((item) => item.x + item.width)) + 20);
@@ -89,20 +95,26 @@ permalink: /pdf-to-word.html
     const id = state.nextRequestId++; const worker = getFormulaWorker(); return new Promise((resolve, reject) => { const timer = setTimeout(() => { state.workerRequests.delete(id); worker.terminate(); state.formulaWorker = null; state.workerReady = false; reject(new Error('公式模型加载超时，请重试或选择“仅转换文字”')); }, 300000); state.workerRequests.set(id, { resolve, reject, timer }); worker.postMessage({ id, type, ...payload }, transfer); });
   }
   async function loadFormulaRecognizer() { if (state.workerReady) return state.formulaBackend; progress('后台加载数学公式模型', 2, '正在检测 WebGPU，页面仍可继续操作。'); state.formulaBackend = await formulaWorkerRequest('load'); state.workerReady = true; return state.formulaBackend; }
-  function cleanLatex(value) { return (value || '').replace(/^\s*\$+|\$+\s*$/g, '').replace(/^\\\[|\\\]$/g, '').replace(/\s+/g, ' ').trim(); }
+  function cleanLatex(value) { return sanitizeText(value).replace(/^\s*\$+|\$+\s*$/g, '').replace(/^\\\[|\\\]$/g, '').replace(/\s+/g, ' ').trim(); }
+  function embeddedMathToLatex(source) {
+    const symbols = { 'α':'\\alpha', 'β':'\\beta', 'γ':'\\gamma', 'δ':'\\delta', 'ε':'\\epsilon', 'θ':'\\theta', 'λ':'\\lambda', 'μ':'\\mu', 'π':'\\pi', 'ρ':'\\rho', 'σ':'\\sigma', 'τ':'\\tau', 'φ':'\\phi', 'ω':'\\omega', 'Σ':'\\Sigma', '×':'\\times', '÷':'\\div', '±':'\\pm', '≤':'\\leq', '≥':'\\geq', '≠':'\\neq', '≈':'\\approx', '∞':'\\infty', '∂':'\\partial', '∇':'\\nabla', '∑':'\\sum', '∏':'\\prod', '∫':'\\int', '→':'\\to', '∈':'\\in', '⊂':'\\subset' };
+    const superscripts = { '⁰':'0', '¹':'1', '²':'2', '³':'3', '⁴':'4', '⁵':'5', '⁶':'6', '⁷':'7', '⁸':'8', '⁹':'9', '⁺':'+', '⁻':'-', 'ⁿ':'n' }; const subscripts = { '₀':'0', '₁':'1', '₂':'2', '₃':'3', '₄':'4', '₅':'5', '₆':'6', '₇':'7', '₈':'8', '₉':'9' };
+    let value = sanitizeText(source).replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻ⁿ]+/g, (part) => `^{${[...part].map((char) => superscripts[char]).join('')}}`).replace(/[₀₁₂₃₄₅₆₇₈₉]+/g, (part) => `_{${[...part].map((char) => subscripts[char]).join('')}}`); Object.entries(symbols).forEach(([symbol, latex]) => { value = value.split(symbol).join(` ${latex} `); }); return value.replace(/\s+/g, ' ').trim();
+  }
+  function isUsableLatex(latex, source) { if (!latex || latex.length > Math.max(160, source.length * 6)) return false; if (/(.)\1{9,}/.test(latex) || /(.{2,8})\1{7,}/.test(latex)) return false; const opens = (latex.match(/\{/g) || []).length; const closes = (latex.match(/\}/g) || []).length; return Math.abs(opens - closes) <= 1 && !/begin(?:cdot|bullet|text)/i.test(latex); }
   function toGrayscaleImage(canvas) {
     const rgba = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data; const gray = new Uint8ClampedArray(canvas.width * canvas.height);
     for (let source = 0, target = 0; source < rgba.length; source += 4, target++) gray[target] = Math.round(rgba[source] * .299 + rgba[source + 1] * .587 + rgba[source + 2] * .114);
     return { data: gray, width: canvas.width, height: canvas.height };
   }
-  async function recognizeFormula(canvas, pageNumber) {
+  async function recognizeFormula(canvas, pageNumber, sourceText) {
     await loadFormulaRecognizer(); const image = toGrayscaleImage(canvas); const result = await formulaWorkerRequest('recognize', { pixels: image.data.buffer, width: image.width, height: image.height }, [image.data.buffer]); const latex = cleanLatex(result);
-    if (!latex) return null; const formula = { latex, pageNumber }; state.formulas.push(formula); return formula;
+    const safeLatex = isUsableLatex(latex, sourceText) ? latex : embeddedMathToLatex(sourceText); if (!safeLatex) return null; const formula = { latex: safeLatex, pageNumber, index: state.formulas.length }; state.formulas.push(formula); return formula;
   }
   async function ocrScannedPage(canvas) {
     progress('识别扫描页正文', 24, '正在加载中英文正文 OCR...'); const module = await import('https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/+esm'); const Tesseract = module.default || module;
     const result = await Tesseract.recognize(canvas, 'eng+chi_sim');
-    return (result.data?.lines || []).map((line) => ({ text: line.text.replace(/\s+/g, ' ').trim(), items: [{ x: line.bbox.x0, y: line.bbox.y1, width: line.bbox.x1 - line.bbox.x0, height: line.bbox.y1 - line.bbox.y0 }] })).filter((line) => line.text);
+    return (result.data?.lines || []).map((line) => ({ text: sanitizeText(line.text.replace(/\s+/g, ' ')), items: [{ x: line.bbox.x0, y: line.bbox.y1, width: line.bbox.x1 - line.bbox.x0, height: line.bbox.y1 - line.bbox.y0 }] })).filter((line) => line.text);
   }
   function renderFormulas() {
     if (!state.formulas.length) { elements.formulas.innerHTML = '<div class="pdf-word-empty">没有识别到明确的数学公式。普通正文不会被伪装成 LaTeX。</div>'; return; }
@@ -139,14 +151,14 @@ permalink: /pdf-to-word.html
       const canvas = document.createElement('canvas'); canvas.width = Math.ceil(viewport.width); canvas.height = Math.ceil(viewport.height); await page.render({ canvasContext: canvas.getContext('2d', { alpha: false }), viewport }).promise;
       const text = await page.getTextContent(); let lines = groupPdfLines(text.items, viewport, pdfjs); if (!lines.length) lines = await ocrScannedPage(canvas); const blocks = [];
       for (const line of lines) {
-        if (!elements.skipFormulas.checked && looksMathematical(line.text) && state.formulas.length < 30) { try { const formula = await recognizeFormula(cropLine(canvas, line), number); if (formula) { blocks.push({ type: 'formula', formula }); continue; } } catch (error) { console.warn('Formula OCR failed', error); } }
+        if (!elements.skipFormulas.checked && looksMathematical(line.text) && state.formulas.length < 30) { try { const formula = await recognizeFormula(cropLine(canvas, line), number, line.text); if (formula) { blocks.push({ type: 'formula', formulaIndex: formula.index }); continue; } } catch (error) { console.warn('Formula OCR failed', error); const latex = embeddedMathToLatex(line.text); if (latex) { const formula = { latex, pageNumber: number, index: state.formulas.length }; state.formulas.push(formula); blocks.push({ type: 'formula', formulaIndex: formula.index }); continue; } } }
         blocks.push({ type: 'text', text: line.text });
       }
       state.pages.push({ number, blocks });
     }
     renderFormulas(); progress('所选页面解析完成', 74, `已解析 ${selected.length} 页，识别到 ${state.formulas.length} 条数学公式。`);
   }
-  const xmlEscape = (value) => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const xmlEscape = (value) => sanitizeText(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const commandMap = { alpha:'α', beta:'β', gamma:'γ', delta:'δ', epsilon:'ε', theta:'θ', lambda:'λ', mu:'μ', pi:'π', rho:'ρ', sigma:'σ', tau:'τ', phi:'φ', omega:'ω', Gamma:'Γ', Delta:'Δ', Lambda:'Λ', Sigma:'Σ', Phi:'Φ', Omega:'Ω', times:'×', cdot:'·', div:'÷', pm:'±', le:'≤', leq:'≤', ge:'≥', geq:'≥', neq:'≠', approx:'≈', infty:'∞', partial:'∂', nabla:'∇', sum:'∑', prod:'∏', int:'∫', to:'→' };
   function latexToOmml(latex) {
     const source = cleanLatex(latex).replace(/\\left|\\right/g, ''); let cursor = 0; const run = (text) => `<m:r><m:t xml:space="preserve">${xmlEscape(text)}</m:t></m:r>`;
@@ -177,7 +189,7 @@ permalink: /pdf-to-word.html
   async function exportDocx() {
     if (!state.pages.length || !window.docx) return; elements.convert.disabled = true; progress('生成可编辑 Word', 8); const { Document, Packer, Paragraph, PageBreak, TextRun } = window.docx; const children = [];
     state.pages.forEach((page, pageIndex) => {
-      page.blocks.forEach((block) => { if (block.type === 'formula') { const index = state.formulas.indexOf(block.formula); children.push(new Paragraph({ children: [new TextRun(`[[FORMULA_${index}]]`)], spacing: { before: 100, after: 100 } })); } else children.push(new Paragraph({ children: [new TextRun({ text: block.text, font: 'Microsoft YaHei', size: 22 })], spacing: { after: 80, line: 300 } })); });
+      page.blocks.forEach((block) => { if (block.type === 'formula') children.push(new Paragraph({ children: [new TextRun(`[[FORMULA_${block.formulaIndex}]]`)], spacing: { before: 100, after: 100 } })); else children.push(new Paragraph({ children: [new TextRun({ text: sanitizeText(block.text), font: 'Microsoft YaHei', size: 22 })], spacing: { after: 80, line: 300 } })); });
       if (pageIndex < state.pages.length - 1) children.push(new Paragraph({ children: [new PageBreak()] }));
     });
     const doc = new Document({ sections: [{ properties: { page: { margin: { top: 720, right: 720, bottom: 720, left: 720 } } }, children }] });
