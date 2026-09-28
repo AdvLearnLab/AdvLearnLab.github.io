@@ -74,8 +74,9 @@ permalink: /pdf-to-word.html
       const flush = () => { if (!segment.length) return; const x = segment[0].x; const end = Math.max(...segment.map((item) => item.x + item.width)); const text = sanitizeText(segment.map((item) => item.text).join(' ').replace(/\s+/g, ' ')); if (text) lines.push({ y: row.y, x, width: end - x, items: segment, text }); segment = []; };
       row.items.forEach((item) => { const previous = segment.at(-1); if (previous && item.x - (previous.x + previous.width) > viewport.width * .075) flush(); segment.push(item); }); flush();
     });
-    const ordered = []; let band = []; const flushBand = () => { if (!band.length) return; const midpoint = viewport.width / 2; const left = band.filter((line) => line.x < midpoint).sort((a, b) => a.y - b.y || a.x - b.x); const right = band.filter((line) => line.x >= midpoint).sort((a, b) => a.y - b.y || a.x - b.x); ordered.push(...left, ...right); band = []; };
-    lines.sort((a, b) => a.y - b.y || a.x - b.x).forEach((line) => { if (line.width > viewport.width * .68) { flushBand(); ordered.push(line); } else band.push(line); }); flushBand(); return ordered;
+    lines.sort((a, b) => a.y - b.y || a.x - b.x); const midpoint = viewport.width / 2; const pairedRows = lines.filter((line) => line.x < midpoint).map((line) => line.y).filter((y) => lines.some((other) => other.x >= midpoint && Math.abs(other.y - y) <= 5));
+    const columnStart = pairedRows.find((y) => pairedRows.filter((next) => next >= y && next <= y + viewport.height * .18).length >= 4); if (columnStart === undefined) return lines;
+    const preamble = lines.filter((line) => line.y < columnStart - 5); const columns = lines.filter((line) => line.y >= columnStart - 5); const left = columns.filter((line) => line.x < midpoint).sort((a, b) => a.y - b.y || a.x - b.x); const right = columns.filter((line) => line.x >= midpoint).sort((a, b) => a.y - b.y || a.x - b.x); return [...preamble, ...left, ...right];
   }
   function cropLine(canvas, line) {
     const minX = Math.max(0, Math.min(...line.items.map((item) => item.x)) - 20); const maxX = Math.min(canvas.width, Math.max(...line.items.map((item) => item.x + item.width)) + 20);
