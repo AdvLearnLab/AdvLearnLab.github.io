@@ -137,7 +137,7 @@ permalink: /pdf-to-word.html
     for (let index = 0; index < selected.length; index++) {
       const number = selected[index]; progress(`转换第 ${number} 页`, index / selected.length * 72, `正在处理所选页面 ${index + 1} / ${selected.length}`); const page = await state.pdf.getPage(number); const viewport = page.getViewport({ scale });
       const canvas = document.createElement('canvas'); canvas.width = Math.ceil(viewport.width); canvas.height = Math.ceil(viewport.height); await page.render({ canvasContext: canvas.getContext('2d', { alpha: false }), viewport }).promise;
-      const text = await page.getTextContent(); let lines = groupPdfLines(text.items, viewport, pdfjs); if (lines.length < 2) lines = await ocrScannedPage(canvas); const blocks = [];
+      const text = await page.getTextContent(); let lines = groupPdfLines(text.items, viewport, pdfjs); if (!lines.length) lines = await ocrScannedPage(canvas); const blocks = [];
       for (const line of lines) {
         if (!elements.skipFormulas.checked && looksMathematical(line.text) && state.formulas.length < 30) { try { const formula = await recognizeFormula(cropLine(canvas, line), number); if (formula) { blocks.push({ type: 'formula', formula }); continue; } } catch (error) { console.warn('Formula OCR failed', error); } }
         blocks.push({ type: 'text', text: line.text });
