@@ -7,3 +7,4 @@ Gemfile.lock
 git-update.sh
 local-pdf-engine/.venv/
 local-pdf-engine/__pycache__/
+.formula-download-watcher.ps1
