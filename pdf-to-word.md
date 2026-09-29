@@ -14,17 +14,24 @@ permalink: /pdf-to-word.html
     <h1>PDF 转可编辑 Word</h1>
     <p>正文转换为可编辑段落；数学公式经专用模型识别为 LaTeX，并写入 Word 原生公式对象。</p>
   </header>
+  <section class="pdf-word-local" aria-labelledby="pdf-word-local-title">
+    <div><strong id="pdf-word-local-title">高质量本地转换引擎</strong><span id="pdf-word-local-status">正在检测本地引擎。它会重建段落、图片和 Word 原生公式。</span></div>
+    <div class="pdf-word-local-actions"><a class="pdf-word-download-engine" href="{{ '/local-pdf-engine.zip' | relative_url }}" download>下载本地引擎</a><button id="pdf-word-check-local" class="pdf-word-button" type="button">重新检测</button></div>
+  </section>
+  <details class="pdf-word-browser-fallback">
+    <summary>浏览器备用模式</summary>
   <section class="pdf-word-model" aria-labelledby="pdf-word-model-title">
     <div><strong id="pdf-word-model-title">公式模型本地缓存</strong><span id="pdf-word-model-status">首次下载后将保存在当前浏览器，后续无需重新下载。</span></div>
     <div class="pdf-word-model-actions"><label class="pdf-word-skip"><input id="pdf-word-skip-formulas" type="checkbox"> 仅转换文字</label><a href="https://huggingface.co/onnx-community/TexTeller3-ONNX" target="_blank" rel="noopener">模型下载页</a><button id="pdf-word-preload" class="pdf-word-button" type="button">后台加载模型</button></div>
   </section>
+  </details>
   <label class="pdf-word-upload">
     <span><strong>选择 PDF 文件</strong><span>文字型 PDF 直接解析；扫描页自动进行中英文 OCR。文件只在浏览器本地处理。</span></span>
     <input id="pdf-word-file" type="file" accept="application/pdf,.pdf">
   </label>
   <div class="pdf-word-options">
     <div class="pdf-word-field"><label for="pdf-word-quality">识别清晰度</label><select id="pdf-word-quality"><option value="1.6">标准</option><option value="2" selected>高清</option><option value="2.5">超清</option></select></div>
-    <div class="pdf-word-mode-note"><strong>输出格式</strong><span>可编辑文字 + Word 原生公式</span></div>
+    <div class="pdf-word-mode-note"><strong>输出格式</strong><span id="pdf-word-active-engine">优先使用本地引擎：可编辑段落 + 图片 + Word 原生公式</span></div>
     <button id="pdf-word-convert" class="pdf-word-button" type="button" disabled>转换所选页面</button>
   </div>
   <div id="pdf-word-progress" class="pdf-word-progress" hidden>
@@ -40,10 +47,11 @@ permalink: /pdf-to-word.html
 <script type="module">
 (() => {
   const modelCacheKey = 'pdf-word-formula-model-v1';
-  const state = { file: null, pdf: null, pages: [], formulas: [], selectedPages: new Set(), formulaWorker: null, workerRequests: new Map(), nextRequestId: 1, workerReady: false, formulaBackend: '' };
+  const localEngineUrl = 'http://127.0.0.1:8765';
+  const state = { file: null, pdf: null, pages: [], formulas: [], selectedPages: new Set(), localEngineReady: false, formulaWorker: null, workerRequests: new Map(), nextRequestId: 1, workerReady: false, formulaBackend: '' };
   const elements = {
     file: document.querySelector('#pdf-word-file'), quality: document.querySelector('#pdf-word-quality'), convert: document.querySelector('#pdf-word-convert'),
-    preload: document.querySelector('#pdf-word-preload'), modelStatus: document.querySelector('#pdf-word-model-status'), skipFormulas: document.querySelector('#pdf-word-skip-formulas'),
+    localStatus: document.querySelector('#pdf-word-local-status'), checkLocal: document.querySelector('#pdf-word-check-local'), activeEngine: document.querySelector('#pdf-word-active-engine'), preload: document.querySelector('#pdf-word-preload'), modelStatus: document.querySelector('#pdf-word-model-status'), skipFormulas: document.querySelector('#pdf-word-skip-formulas'),
     progress: document.querySelector('#pdf-word-progress'), progressTitle: document.querySelector('#pdf-word-progress-title'), progressValue: document.querySelector('#pdf-word-progress-value'),
     progressBar: document.querySelector('#pdf-word-progress-bar'), progressDetail: document.querySelector('#pdf-word-progress-detail'), workspace: document.querySelector('#pdf-word-workspace'),
     pages: document.querySelector('#pdf-word-pages'), selectionCount: document.querySelector('#pdf-word-selection-count'), selectAll: document.querySelector('#pdf-word-select-all'), selectNone: document.querySelector('#pdf-word-select-none'), pageRange: document.querySelector('#pdf-word-page-range'), applyRange: document.querySelector('#pdf-word-apply-range'),
@@ -57,6 +65,39 @@ permalink: /pdf-to-word.html
   function progress(title, value, detail = '') {
     elements.progress.hidden = false; elements.progressTitle.textContent = title; elements.progressValue.textContent = `${Math.round(value)}%`;
     elements.progressBar.style.width = `${Math.max(0, Math.min(100, value))}%`; elements.progressDetail.textContent = detail;
+  }
+  async function checkLocalEngine() {
+    elements.checkLocal.disabled = true;
+    const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), 2200);
+    try {
+      const response = await fetch(`${localEngineUrl}/status`, { signal: controller.signal, cache: 'no-store' });
+      if (!response.ok) throw new Error('服务未就绪');
+      const data = await response.json(); state.localEngineReady = Boolean(data.ready);
+      elements.localStatus.textContent = `本地引擎已连接（${data.engine || '高质量解析'}）。转换将在电脑本地完成。`;
+      elements.localStatus.closest('.pdf-word-local').classList.add('is-ready');
+      elements.activeEngine.textContent = '本地高质量模式：段落重排 + 图片 + Word 原生公式';
+      elements.checkLocal.textContent = '已连接';
+    } catch (_) {
+      state.localEngineReady = false;
+      elements.localStatus.textContent = '尚未连接。首次使用请下载并解压，双击 install.bat；以后只需双击 start.bat。';
+      elements.localStatus.closest('.pdf-word-local').classList.remove('is-ready');
+      elements.activeEngine.textContent = '当前使用浏览器备用模式；连接本地引擎后排版与公式质量更高';
+      elements.checkLocal.textContent = '重新检测';
+    } finally { clearTimeout(timer); elements.checkLocal.disabled = false; }
+  }
+  function selectedPageSpec() { return [...state.selectedPages].sort((a, b) => a - b).join(','); }
+  async function convertWithLocalEngine() {
+    progress('本地引擎正在解析', 18, '正在提取段落、图片和数学公式，请勿关闭本地引擎窗口。');
+    const body = new FormData(); body.append('file', state.file); body.append('pages', selectedPageSpec());
+    const response = await fetch(`${localEngineUrl}/convert`, { method: 'POST', body });
+    if (!response.ok) { let message = `本地转换失败（${response.status}）`; try { message = (await response.json()).detail || message; } catch (_) {} throw new Error(message); }
+    const formulaHeader = response.headers.get('X-PDF-Formulas'); state.formulas = [];
+    if (formulaHeader) { try { state.formulas = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(formulaHeader), (char) => char.charCodeAt(0)))).map((item, index) => ({ ...item, index })); } catch (_) {} }
+    renderFormulas();
+    progress('正在生成 Word', 88, '正在写入可编辑段落、图片和原生公式对象...');
+    const blob = await response.blob(); const anchor = document.createElement('a'); anchor.href = URL.createObjectURL(blob);
+    anchor.download = `${state.file.name.replace(/\.pdf$/i, '')}-editable.docx`; anchor.click(); setTimeout(() => URL.revokeObjectURL(anchor.href), 3000);
+    progress('Word 已生成', 100, '文档已重新排版，正文、图片和公式均可继续编辑。');
   }
   function looksMathematical(text) {
     const value = text.trim(); if (value.length < 2 || value.length > 420) return false;
@@ -198,7 +239,7 @@ permalink: /pdf-to-word.html
     progress('写入 Word 原生公式', 76, '正在把 LaTeX 转换为可编辑 OMML 公式对象...'); const blob = await injectWordEquations(await Packer.toBlob(doc));
     const anchor = document.createElement('a'); anchor.href = URL.createObjectURL(blob); anchor.download = `${state.file.name.replace(/\.pdf$/i, '')}-editable.docx`; anchor.click(); setTimeout(() => URL.revokeObjectURL(anchor.href), 3000); progress('Word 已生成', 100, '正文和公式均可在 Word 中继续编辑。'); elements.convert.disabled = false;
   }
-  async function convertSelectedPages() { if (!state.selectedPages.size) return; elements.convert.disabled = true; try { await parseSelectedPages(); await exportDocx(); } catch (error) { console.error(error); progress('转换失败', 0, error.message || '所选页面转换失败'); elements.convert.disabled = false; } }
+  async function convertSelectedPages() { if (!state.selectedPages.size) return; elements.convert.disabled = true; try { if (state.localEngineReady) await convertWithLocalEngine(); else { await parseSelectedPages(); await exportDocx(); } } catch (error) { console.error(error); progress('转换失败', 0, error.message || '所选页面转换失败'); } finally { elements.convert.disabled = state.selectedPages.size === 0; } }
   elements.file.addEventListener('change', async () => { const file = elements.file.files[0]; if (!file) return; state.file = file; elements.convert.disabled = true; try { await loadPdf(file); } catch (error) { console.error(error); progress('转换失败', 0, error.message || 'PDF 读取失败'); } });
   elements.preload.addEventListener('click', async () => {
     elements.preload.disabled = true; elements.preload.textContent = '后台加载中...'; elements.modelStatus.textContent = '模型在后台下载，页面仍可操作；请保持当前页面打开。';
@@ -209,12 +250,13 @@ permalink: /pdf-to-word.html
   elements.selectNone.addEventListener('click', () => { state.selectedPages.clear(); elements.pages.querySelectorAll('input').forEach((input) => { input.checked = false; }); updateSelection(); });
   elements.applyRange.addEventListener('click', () => { if (!state.pdf) return; state.selectedPages = parsePageRange(elements.pageRange.value, state.pdf.numPages); elements.pages.querySelectorAll('input').forEach((input) => { input.checked = state.selectedPages.has(Number(input.value)); }); updateSelection(); });
   elements.pageRange.addEventListener('keydown', (event) => { if (event.key === 'Enter') elements.applyRange.click(); }); elements.convert.addEventListener('click', convertSelectedPages);
+  elements.checkLocal.addEventListener('click', checkLocalEngine);
   elements.copyAll.addEventListener('click', () => navigator.clipboard.writeText(state.formulas.map((item) => item.latex).join('\n\n')));
   elements.downloadTex.addEventListener('click', () => { const blob = new Blob([state.formulas.map((item) => `\\[\n${item.latex}\n\\]`).join('\n\n')], { type: 'text/plain;charset=utf-8' }); const anchor = document.createElement('a'); anchor.href = URL.createObjectURL(blob); anchor.download = `${state.file?.name.replace(/\.pdf$/i, '') || 'formulas'}.tex`; anchor.click(); setTimeout(() => URL.revokeObjectURL(anchor.href), 2000); });
   async function initializeCachedModel() {
     let cached = Boolean(localStorage.getItem(modelCacheKey)); if (!cached && 'caches' in window) { const base = 'https://huggingface.co/onnx-community/TexTeller3-ONNX/resolve/main/onnx/'; cached = Boolean(await caches.match(`${base}decoder_model_merged_q4.onnx`) || await caches.match(`${base}decoder_model_merged_q4f16.onnx`)); if (cached) localStorage.setItem(modelCacheKey, JSON.stringify({ detectedAt: Date.now() })); }
     if (!cached) return; elements.preload.textContent = '从本地缓存启动'; elements.modelStatus.textContent = '检测到本地模型缓存，页面空闲时将自动启动，不会重复下载。'; const warmup = async () => { if (state.workerReady) return; elements.preload.disabled = true; try { const backend = await loadFormulaRecognizer(); elements.preload.textContent = '模型已就绪'; elements.modelStatus.textContent = `已从本地缓存启动（${backend}）。`; } catch (_) { elements.preload.disabled = false; elements.preload.textContent = '重新下载模型'; localStorage.removeItem(modelCacheKey); } }; 'requestIdleCallback' in window ? requestIdleCallback(warmup, { timeout: 2500 }) : setTimeout(warmup, 800);
   }
-  initializeCachedModel().catch(() => {});
+  checkLocalEngine(); initializeCachedModel().catch(() => {});
 })();
 </script>
