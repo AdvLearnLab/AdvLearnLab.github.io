@@ -2,15 +2,28 @@ $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $Venv = Join-Path $Root ".venv"
 
-if (-not (Get-Command py -ErrorAction SilentlyContinue)) {
-  Write-Host "Python 3.10 or 3.11 is required. Install it from https://www.python.org/downloads/" -ForegroundColor Red
-  Read-Host "Press Enter to exit"
+function Find-Python {
+  $commands = @("py", "python", "python3")
+  foreach ($command in $commands) {
+    $found = Get-Command $command -ErrorAction SilentlyContinue
+    if ($found -and $found.Source -notlike "*\Microsoft\WindowsApps\*") {
+      & $found.Source --version *> $null
+      if ($LASTEXITCODE -eq 0) { return $found.Source }
+    }
+  }
+  $bundled = Get-ChildItem "$env:USERPROFILE\.cache\codex-runtimes\*\dependencies\python\python.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+  if ($bundled) { return $bundled.FullName }
+  return $null
+}
+
+$PythonCommand = Find-Python
+if (-not $PythonCommand) {
+  Write-Host "Python was not found. Install Python 3.10+ from https://www.python.org/downloads/ and enable Add Python to PATH." -ForegroundColor Red
   exit 1
 }
 
-if (-not (Test-Path $Venv)) { py -3 -m venv $Venv }
+Write-Host "Using Python: $PythonCommand" -ForegroundColor Cyan
+if (-not (Test-Path $Venv)) { & $PythonCommand -m venv $Venv }
 & "$Venv\Scripts\python.exe" -m pip install --upgrade pip
-& "$Venv\Scripts\pip.exe" install -r (Join-Path $Root "requirements.txt")
-Write-Host "Installation complete. Run start.ps1 when using the PDF converter." -ForegroundColor Green
-Read-Host "Press Enter to exit"
-
+& "$Venv\Scripts\python.exe" -m pip install --prefer-binary -r (Join-Path $Root "requirements.txt")
+Write-Host "Installation complete. You can now double-click start.bat." -ForegroundColor Green

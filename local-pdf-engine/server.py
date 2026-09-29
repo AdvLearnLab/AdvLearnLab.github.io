@@ -120,6 +120,21 @@ def formula_model():
     return _formula_model
 
 
+def embedded_formula(text: str) -> str:
+    replacements = {
+        "α": r"\alpha", "β": r"\beta", "γ": r"\gamma", "δ": r"\delta",
+        "θ": r"\theta", "λ": r"\lambda", "μ": r"\mu", "π": r"\pi",
+        "σ": r"\sigma", "φ": r"\phi", "ω": r"\omega", "×": r"\times",
+        "±": r"\pm", "≤": r"\leq", "≥": r"\geq", "≠": r"\neq",
+        "≈": r"\approx", "∞": r"\infty", "∑": r"\sum", "∏": r"\prod",
+        "∫": r"\int", "∂": r"\partial", "∇": r"\nabla", "∈": r"\in",
+    }
+    value = clean_text(text)
+    for symbol, command in replacements.items():
+        value = value.replace(symbol, f" {command} ")
+    return re.sub(r"\s+", " ", value).strip()
+
+
 def recognize_formula(page: fitz.Page, bbox: tuple[float, float, float, float]) -> str:
     rect = fitz.Rect(bbox)
     rect.x0 = max(page.rect.x0, rect.x0 - 4)
@@ -130,7 +145,10 @@ def recognize_formula(page: fitz.Page, bbox: tuple[float, float, float, float]) 
     from PIL import Image
 
     image = Image.open(io.BytesIO(pixmap.tobytes("png")))
-    latex = clean_text(formula_model()(image)).strip("$")
+    try:
+        latex = clean_text(formula_model()(image)).strip("$")
+    except (ImportError, ModuleNotFoundError):
+        return ""
     if len(latex) > 500 or re.search(r"(.)\1{10,}", latex):
         return ""
     return latex
@@ -228,6 +246,8 @@ def add_text_block(document: Document, block: dict, page: fitz.Page, page_number
                 document.add_paragraph(join_lines(pending))
                 pending = []
             latex = recognize_formula(page, line["bbox"])
+            if not latex:
+                latex = embedded_formula(line_text(line))
             if latex:
                 add_equation(document, latex)
                 formulas.append({"pageNumber": page_number, "latex": latex})
@@ -290,7 +310,13 @@ def convert_pdf(source: Path, destination: Path, pages_spec: str) -> list[dict]:
 
 @app.get("/status")
 def status():
-    return {"ready": True, "formulaModelLoaded": _formula_model is not None, "engine": "PyMuPDF + pix2tex + OOXML"}
+    try:
+        import pix2tex  # noqa: F401
+        formula_available = True
+    except ImportError:
+        formula_available = False
+    engine = "PyMuPDF + OOXML" + (" + pix2tex" if formula_available else "")
+    return {"ready": True, "formulaModelInstalled": formula_available, "formulaModelLoaded": _formula_model is not None, "engine": engine}
 
 
 @app.post("/convert")
