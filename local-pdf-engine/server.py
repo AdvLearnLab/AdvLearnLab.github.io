@@ -23,6 +23,7 @@ from starlette.background import BackgroundTask
 from formula_extractor import MATH_TOKEN, block_text, font_is_math, is_label_block, is_math_display
 from latex2mathml.converter import convert as latex_to_mathml
 from omml_engine import latex_to_oMath
+from vector_math import vector_formula_to_latex
 
 os.environ.setdefault("NO_ALBUMENTATIONS_UPDATE", "1")
 
@@ -52,6 +53,7 @@ _formula_model = None
 _control_chars = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]")
 _math_fonts = re.compile(r"(cmmi|cmsy|cmex|math|symbol|mt extra|euclid)", re.I)
 _math_symbols = re.compile(r"[=<>≤≥≠≈∑∏∫√±×÷∞∂∇∈⊂^_{}]|[α-ωΑ-Ω]")
+_formula_signal = re.compile(r"[=<>≤≥≠≈∑∏∫√±×÷∞∂∇∈∉⊂⊆⊃⊇∩∪→←↔^_{}]|[α-ωΑ-Ω]")
 
 
 def clean_text(value: str) -> str:
@@ -94,18 +96,26 @@ def line_text(line: dict) -> str:
 
 
 def is_display_formula(block: dict, page_width: float) -> bool:
-    if is_math_display(block, page_width):
+    if block.get("formula_group"):
         return True
     text = block_text(block)
     if not text or is_label_block(block, page_width) or len(text) > 500:
         return False
     spans = [span for line in block.get("lines", []) for span in line.get("spans", []) if clean_text(span.get("text", ""))]
-    if not spans or not MATH_TOKEN.search(text):
+    if not spans or not _formula_signal.search(text):
         return False
+    bbox = block["bbox"]
+    width = bbox[2] - bbox[0]
+    center = (bbox[0] + bbox[2]) / 2
+    column_centered = min(abs(center - page_width * 0.25), abs(center - page_width * 0.75)) < page_width * 0.12
+    has_math_font = any(font_is_math(span.get("font", "")) for span in spans)
+    prose_words = len(re.findall(r"[A-Za-z]{5,}", text))
+    if width < page_width * 0.38 and column_centered and has_math_font and prose_words <= 5 and len(block.get("lines", [])) <= 10:
+        return True
     math_chars = sum(len(clean_text(span.get("text", ""))) for span in spans if font_is_math(span.get("font", "")))
     total_chars = sum(len(clean_text(span.get("text", ""))) for span in spans)
-    prose_words = len(re.findall(r"[A-Za-z]{5,}", text))
-    return math_chars / max(1, total_chars) >= 0.42 and prose_words <= 5
+    legacy_display = is_math_display(block, page_width)
+    return (legacy_display or math_chars / max(1, total_chars) >= 0.42) and prose_words <= 5 and len(block.get("lines", [])) <= 10
 
 
 def merge_display_formula_blocks(blocks: list[dict], page_width: float) -> list[dict]:
@@ -118,12 +128,14 @@ def merge_display_formula_blocks(blocks: list[dict], page_width: float) -> list[
         group = [block]
         cursor = index + 1
         bottom = block["bbox"][3]
+        group_center = (block["bbox"][0] + block["bbox"][2]) / 2
         while cursor < len(blocks):
             candidate = blocks[cursor]
-            if candidate.get("type") != 0 or candidate["bbox"][1] - bottom > 18:
+            candidate_center = (candidate["bbox"][0] + candidate["bbox"][2]) / 2
+            vertical_gap = candidate["bbox"][1] - bottom
+            if candidate.get("type") != 0 or vertical_gap < -3 or vertical_gap > 18 or abs(candidate_center - group_center) > page_width * 0.20:
                 break
-            has_math_font = any(font_is_math(span.get("font", "")) for line in candidate.get("lines", []) for span in line.get("spans", []))
-            if not (is_display_formula(candidate, page_width) or is_label_block(candidate, page_width) or has_math_font):
+            if not (is_display_formula(candidate, page_width) or is_label_block(candidate, page_width)):
                 break
             group.append(candidate); bottom = max(bottom, candidate["bbox"][3]); cursor += 1
         if len(group) == 1:
@@ -352,12 +364,11 @@ def add_text_block(document: Document, block: dict, page: fitz.Page, page_number
     lines = block.get("lines", [])
     source = block_text(block)
     if is_display_formula(block, page.rect.width):
-        latex = recognize_formula(page, block["bbox"], source)
-        method = "OCR"
+        latex = vector_formula_to_latex(block)
+        method = "PDF vector"
         if not latex:
-            fallback = embedded_formula(source)
-            latex = fallback if valid_latex(fallback, source) else ""
-            method = "PDF text"
+            latex = recognize_formula(page, block["bbox"], source)
+            method = "OCR fallback"
         if latex:
             try:
                 add_equation(document, latex)
@@ -378,29 +389,33 @@ def add_text_block(document: Document, block: dict, page: fitz.Page, page_number
         return
     paragraph = document.add_paragraph()
     for line_index, line in enumerate(lines):
-        math_buffer = ""
-        for span in line.get("spans", []):
-            span_text = clean_text(span.get("text", ""))
-            is_math = font_is_math(span.get("font", "")) and bool(MATH_TOKEN.search(span_text))
-            if is_math:
-                math_buffer += span_text
-                continue
-            if math_buffer:
-                latex = embedded_formula(math_buffer)
-                try:
-                    paragraph._p.append(equation_element(latex, display=False))
-                    formulas.append({"pageNumber": page_number, "latex": latex, "method": "PDF inline"})
-                except Exception:
-                    paragraph.add_run(math_buffer)
-                math_buffer = ""
-            paragraph.add_run(span_text)
-        if math_buffer:
-            latex = embedded_formula(math_buffer)
+        spans = line.get("spans", [])
+        math_spans: list[dict] = []
+
+        def flush_math() -> None:
+            nonlocal math_spans
+            if not math_spans:
+                return
+            latex = vector_formula_to_latex({"lines": [{"spans": math_spans}]})
             try:
                 paragraph._p.append(equation_element(latex, display=False))
-                formulas.append({"pageNumber": page_number, "latex": latex, "method": "PDF inline"})
+                formulas.append({"pageNumber": page_number, "latex": latex, "method": "PDF vector inline"})
             except Exception:
-                paragraph.add_run(math_buffer)
+                paragraph.add_run("".join(s.get("text", "") for s in math_spans))
+            math_spans = []
+
+        for span_index, span in enumerate(spans):
+            span_text = clean_text(span.get("text", ""))
+            is_math = font_is_math(span.get("font", "")) and not re.fullmatch(r"[§‡♭†Φ*]+", span_text.strip())
+            previous_math = bool(math_spans)
+            small_script = previous_math and float(span.get("size", 10)) < max(float(s.get("size", 10)) for s in math_spans) * .88
+            next_is_math = span_index + 1 < len(spans) and font_is_math(spans[span_index + 1].get("font", ""))
+            if is_math or small_script or (previous_math and next_is_math and not re.search(r"\s", span_text.strip())):
+                math_spans.append(span)
+                continue
+            flush_math()
+            paragraph.add_run(span_text)
+        flush_math()
         if line_index < len(lines) - 1:
             paragraph.add_run(" ")
 
