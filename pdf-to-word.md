@@ -73,7 +73,8 @@ permalink: /pdf-to-word.html
       const response = await fetch(`${localEngineUrl}/status`, { signal: controller.signal, cache: 'no-store' });
       if (!response.ok) throw new Error('服务未就绪');
       const data = await response.json(); state.localEngineReady = Boolean(data.ready);
-      elements.localStatus.textContent = `本地引擎已连接（${data.engine || '高质量解析'}）。转换将在电脑本地完成。`;
+      const formulaState = data.formulaModelInstalled ? '完整公式模型已就绪' : '公式模型未完整，请运行 install-formulas.bat';
+      elements.localStatus.textContent = `本地引擎已连接（${data.engine || '高质量解析'}，${formulaState}）。`;
       elements.localStatus.closest('.pdf-word-local').classList.add('is-ready');
       elements.activeEngine.textContent = '本地高质量模式：段落重排 + 图片 + Word 原生公式';
       elements.checkLocal.textContent = '已连接';
@@ -87,6 +88,8 @@ permalink: /pdf-to-word.html
   }
   function selectedPageSpec() { return [...state.selectedPages].sort((a, b) => a - b).join(','); }
   async function convertWithLocalEngine() {
+    const status = await fetch(`${localEngineUrl}/status`, { cache: 'no-store' }).then((response) => response.json());
+    if (!status.formulaModelInstalled) throw new Error('完整公式模型尚未安装。请先双击本地引擎目录中的 install-formulas.bat，完成后重启 start.bat。');
     progress('本地引擎正在解析', 18, '正在提取段落、图片和数学公式，请勿关闭本地引擎窗口。');
     const body = new FormData(); body.append('file', state.file); body.append('pages', selectedPageSpec());
     const response = await fetch(`${localEngineUrl}/convert`, { method: 'POST', body });

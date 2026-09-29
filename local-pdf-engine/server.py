@@ -19,7 +19,7 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from starlette.background import BackgroundTask
-from formula_extractor import MATH_TOKEN, block_text, font_is_math, is_math_display
+from formula_extractor import MATH_TOKEN, block_text, font_is_math, is_label_block, is_math_display
 from latex2mathml.converter import convert as latex_to_mathml
 from omml_engine import latex_to_oMath
 
@@ -90,6 +90,48 @@ def line_text(line: dict) -> str:
     return clean_text("".join(span.get("text", "") for span in line.get("spans", [])))
 
 
+def is_display_formula(block: dict, page_width: float) -> bool:
+    if is_math_display(block, page_width):
+        return True
+    text = block_text(block)
+    if not text or is_label_block(block, page_width) or len(text) > 500:
+        return False
+    spans = [span for line in block.get("lines", []) for span in line.get("spans", []) if clean_text(span.get("text", ""))]
+    if not spans or not MATH_TOKEN.search(text):
+        return False
+    math_chars = sum(len(clean_text(span.get("text", ""))) for span in spans if font_is_math(span.get("font", "")))
+    total_chars = sum(len(clean_text(span.get("text", ""))) for span in spans)
+    prose_words = len(re.findall(r"[A-Za-z]{5,}", text))
+    return math_chars / max(1, total_chars) >= 0.42 and prose_words <= 5
+
+
+def merge_display_formula_blocks(blocks: list[dict], page_width: float) -> list[dict]:
+    merged: list[dict] = []
+    index = 0
+    while index < len(blocks):
+        block = blocks[index]
+        if block.get("type") != 0 or not is_display_formula(block, page_width):
+            merged.append(block); index += 1; continue
+        group = [block]
+        cursor = index + 1
+        bottom = block["bbox"][3]
+        while cursor < len(blocks):
+            candidate = blocks[cursor]
+            if candidate.get("type") != 0 or candidate["bbox"][1] - bottom > 18:
+                break
+            has_math_font = any(font_is_math(span.get("font", "")) for line in candidate.get("lines", []) for span in line.get("spans", []))
+            if not (is_display_formula(candidate, page_width) or is_label_block(candidate, page_width) or has_math_font):
+                break
+            group.append(candidate); bottom = max(bottom, candidate["bbox"][3]); cursor += 1
+        if len(group) == 1:
+            merged.append(block)
+        else:
+            bbox = (min(item["bbox"][0] for item in group), min(item["bbox"][1] for item in group), max(item["bbox"][2] for item in group), max(item["bbox"][3] for item in group))
+            merged.append({"type": 0, "bbox": bbox, "lines": [line for item in group for line in item.get("lines", [])], "formula_group": True})
+        index = cursor
+    return merged
+
+
 def is_formula_line(line: dict) -> bool:
     text = line_text(line)
     if len(text) < 2:
@@ -128,7 +170,8 @@ def formula_weights_ready() -> bool:
         import pix2tex
         package_root = Path(pix2tex.__file__).resolve().parent
         weights = package_root / "model" / "checkpoints" / "weights.pth"
-        return weights.exists() and weights.stat().st_size > 90_000_000
+        resizer = package_root / "model" / "checkpoints" / "image_resizer.pth"
+        return weights.exists() and weights.stat().st_size == 102_113_875 and resizer.exists() and resizer.stat().st_size == 19_441_973
     except (ImportError, OSError):
         return False
 
@@ -305,7 +348,7 @@ def add_formula_image(document: Document, page: fitz.Page, bbox, page_width: flo
 def add_text_block(document: Document, block: dict, page: fitz.Page, page_number: int, formulas: list[dict]) -> None:
     lines = block.get("lines", [])
     source = block_text(block)
-    if is_math_display(block, page.rect.width):
+    if is_display_formula(block, page.rect.width):
         latex = recognize_formula(page, block["bbox"], source)
         method = "OCR"
         if not latex:
@@ -389,7 +432,8 @@ def convert_pdf(source: Path, destination: Path, pages_spec: str) -> list[dict]:
     for page_index, page_number in enumerate(selected):
         page = pdf[page_number]
         payload = page.get_text("dict", flags=fitz.TEXTFLAGS_DICT)
-        for block in block_order(payload.get("blocks", []), page.rect.width):
+        ordered_blocks = block_order(payload.get("blocks", []), page.rect.width)
+        for block in merge_display_formula_blocks(ordered_blocks, page.rect.width):
             if block.get("type") == 0:
                 add_text_block(document, block, page, page_number + 1, formulas)
             elif block.get("type") == 1:
