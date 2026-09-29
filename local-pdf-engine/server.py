@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import io
 import json
+import os
 import re
 import tempfile
 from pathlib import Path
@@ -22,6 +23,8 @@ from starlette.background import BackgroundTask
 from formula_extractor import MATH_TOKEN, block_text, font_is_math, is_label_block, is_math_display
 from latex2mathml.converter import convert as latex_to_mathml
 from omml_engine import latex_to_oMath
+
+os.environ.setdefault("NO_ALBUMENTATIONS_UPDATE", "1")
 
 app = FastAPI(title="Local PDF to Editable Word Engine")
 app.add_middleware(
@@ -473,4 +476,6 @@ async def convert(file: UploadFile = File(...), pages: str = Form("")):
 
 
 if __name__ == "__main__":
+    if formula_weights_ready():
+        formula_model()
     uvicorn.run(app, host="127.0.0.1", port=8765)
