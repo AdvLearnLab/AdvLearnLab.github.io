@@ -19,6 +19,9 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from starlette.background import BackgroundTask
+from formula_extractor import MATH_TOKEN, block_text, font_is_math, is_math_display
+from latex2mathml.converter import convert as latex_to_mathml
+from omml_engine import latex_to_oMath
 
 app = FastAPI(title="Local PDF to Editable Word Engine")
 app.add_middleware(
@@ -120,6 +123,16 @@ def formula_model():
     return _formula_model
 
 
+def formula_weights_ready() -> bool:
+    try:
+        import pix2tex
+        package_root = Path(pix2tex.__file__).resolve().parent
+        weights = package_root / "model" / "checkpoints" / "weights.pth"
+        return weights.exists() and weights.stat().st_size > 90_000_000
+    except (ImportError, OSError):
+        return False
+
+
 def embedded_formula(text: str) -> str:
     replacements = {
         "α": r"\alpha", "β": r"\beta", "γ": r"\gamma", "δ": r"\delta",
@@ -135,23 +148,53 @@ def embedded_formula(text: str) -> str:
     return re.sub(r"\s+", " ", value).strip()
 
 
-def recognize_formula(page: fitz.Page, bbox: tuple[float, float, float, float]) -> str:
-    rect = fitz.Rect(bbox)
-    rect.x0 = max(page.rect.x0, rect.x0 - 4)
-    rect.y0 = max(page.rect.y0, rect.y0 - 3)
-    rect.x1 = min(page.rect.x1, rect.x1 + 4)
-    rect.y1 = min(page.rect.y1, rect.y1 + 3)
-    pixmap = page.get_pixmap(matrix=fitz.Matrix(2.5, 2.5), clip=rect, alpha=False)
-    from PIL import Image
+def normalize_latex(value: str) -> str:
+    value = clean_text(value).strip()
+    value = re.sub(r"^```(?:latex)?|```$", "", value, flags=re.I).strip()
+    value = re.sub(r"^(?:\$\$|\\\[|\\\()|(?:\$\$|\\\]|\\\))$", "", value).strip()
+    value = re.sub(r"\\tag\s*\{[^{}]*\}\s*$", "", value).strip()
+    value = re.sub(r"\s*\(\s*\d+(?:\.\d+)*\s*\)\s*$", "", value).strip()
+    return re.sub(r"\s+", " ", value)
 
-    image = Image.open(io.BytesIO(pixmap.tobytes("png")))
+
+def valid_latex(candidate: str, source: str) -> bool:
+    if not candidate or len(candidate) > 600 or re.search(r"(.)\1{10,}", candidate):
+        return False
+    if candidate.count("{") != candidate.count("}"):
+        return False
+    if any(token in candidate for token in (r"\includegraphics", r"\documentclass", r"\begin{document}")):
+        return False
+    if "=" in source and "=" not in candidate:
+        return False
+    source_ops = set(re.findall(r"[=<>≤≥≠≈∑∏∫√±×÷∞]", source))
+    candidate_ops = set(re.findall(r"[=<>≤≥≠≈∑∏∫√±×÷∞]", candidate))
+    if source_ops and not candidate_ops and not re.search(r"\\(?:sum|prod|int|sqrt|leq|geq|neq|approx|pm|times)", candidate):
+        return False
     try:
-        latex = clean_text(formula_model()(image)).strip("$")
-    except (ImportError, ModuleNotFoundError):
+        latex_to_mathml(candidate)
+    except Exception:
+        return False
+    return True
+
+
+def recognize_formula(page: fitz.Page, bbox: tuple[float, float, float, float], source: str) -> str:
+    if not formula_weights_ready():
         return ""
-    if len(latex) > 500 or re.search(r"(.)\1{10,}", latex):
+    rect = fitz.Rect(bbox)
+    rect.x0 = max(page.rect.x0, rect.x0 - 8)
+    rect.y0 = max(page.rect.y0, rect.y0 - 6)
+    rect.x1 = min(page.rect.x1, rect.x1 + 8)
+    rect.y1 = min(page.rect.y1, rect.y1 + 6)
+    pixmap = page.get_pixmap(matrix=fitz.Matrix(4.2, 4.2), clip=rect, alpha=False)
+    from PIL import Image, ImageOps
+
+    image = Image.open(io.BytesIO(pixmap.tobytes("png"))).convert("L")
+    image = ImageOps.expand(ImageOps.autocontrast(image), border=24, fill="white").convert("RGB")
+    try:
+        latex = normalize_latex(formula_model()(image))
+    except (ImportError, ModuleNotFoundError, RuntimeError):
         return ""
-    return latex
+    return latex if valid_latex(latex, source) else ""
 
 
 def omml_run(text: str) -> str:
@@ -231,39 +274,89 @@ def latex_to_omml(latex: str) -> str:
     return f'<m:oMath {nsdecls("m")}>{sequence()}</m:oMath>'
 
 
+def equation_element(latex: str, display: bool):
+    element = latex_to_oMath(latex)
+    if not display:
+        return element
+    from lxml import etree
+    wrapper = etree.Element("{http://schemas.openxmlformats.org/officeDocument/2006/math}oMathPara")
+    wrapper.append(element)
+    return wrapper
+
+
 def add_equation(document: Document, latex: str) -> None:
     paragraph = document.add_paragraph()
     paragraph.alignment = 1
-    paragraph._p.append(parse_xml(latex_to_omml(latex)))
+    paragraph._p.append(equation_element(latex, display=True))
+
+
+def add_formula_image(document: Document, page: fitz.Page, bbox, page_width: float) -> None:
+    rect = fitz.Rect(bbox)
+    rect.x0 = max(page.rect.x0, rect.x0 - 6)
+    rect.y0 = max(page.rect.y0, rect.y0 - 4)
+    rect.x1 = min(page.rect.x1, rect.x1 + 6)
+    rect.y1 = min(page.rect.y1, rect.y1 + 4)
+    pixmap = page.get_pixmap(matrix=fitz.Matrix(3, 3), clip=rect, alpha=False)
+    paragraph = document.add_paragraph(); paragraph.alignment = 1
+    width = min(6.0, max(1.0, rect.width / page_width * 6.2))
+    paragraph.add_run().add_picture(io.BytesIO(pixmap.tobytes("png")), width=Inches(width))
 
 
 def add_text_block(document: Document, block: dict, page: fitz.Page, page_number: int, formulas: list[dict]) -> None:
     lines = block.get("lines", [])
-    pending: list[str] = []
-    for line in lines:
-        if is_formula_line(line):
-            if pending:
-                document.add_paragraph(join_lines(pending))
-                pending = []
-            latex = recognize_formula(page, line["bbox"])
-            if not latex:
-                latex = embedded_formula(line_text(line))
-            if latex:
+    source = block_text(block)
+    if is_math_display(block, page.rect.width):
+        latex = recognize_formula(page, block["bbox"], source)
+        method = "OCR"
+        if not latex:
+            fallback = embedded_formula(source)
+            latex = fallback if valid_latex(fallback, source) else ""
+            method = "PDF text"
+        if latex:
+            try:
                 add_equation(document, latex)
-                formulas.append({"pageNumber": page_number, "latex": latex})
-            else:
-                pending.append(line_text(line))
-        else:
-            pending.append(line_text(line))
-    if pending:
-        text = join_lines(pending)
-        if not text:
-            return
-        max_size = max((span.get("size", 10) for line in lines for span in line.get("spans", [])), default=10)
-        if len(text) < 120 and max_size >= 14:
-            document.add_heading(text, level=1 if max_size >= 18 else 2)
-        else:
-            document.add_paragraph(text)
+                formulas.append({"pageNumber": page_number, "latex": latex, "method": method})
+                return
+            except Exception:
+                pass
+        add_formula_image(document, page, block["bbox"], page.rect.width)
+        formulas.append({"pageNumber": page_number, "latex": "", "method": "image fallback"})
+        return
+
+    text = join_lines(line_text(line) for line in lines)
+    if not text:
+        return
+    max_size = max((span.get("size", 10) for line in lines for span in line.get("spans", [])), default=10)
+    if len(text) < 120 and max_size >= 14:
+        document.add_heading(text, level=1 if max_size >= 18 else 2)
+        return
+    paragraph = document.add_paragraph()
+    for line_index, line in enumerate(lines):
+        math_buffer = ""
+        for span in line.get("spans", []):
+            span_text = clean_text(span.get("text", ""))
+            is_math = font_is_math(span.get("font", "")) and bool(MATH_TOKEN.search(span_text))
+            if is_math:
+                math_buffer += span_text
+                continue
+            if math_buffer:
+                latex = embedded_formula(math_buffer)
+                try:
+                    paragraph._p.append(equation_element(latex, display=False))
+                    formulas.append({"pageNumber": page_number, "latex": latex, "method": "PDF inline"})
+                except Exception:
+                    paragraph.add_run(math_buffer)
+                math_buffer = ""
+            paragraph.add_run(span_text)
+        if math_buffer:
+            latex = embedded_formula(math_buffer)
+            try:
+                paragraph._p.append(equation_element(latex, display=False))
+                formulas.append({"pageNumber": page_number, "latex": latex, "method": "PDF inline"})
+            except Exception:
+                paragraph.add_run(math_buffer)
+        if line_index < len(lines) - 1:
+            paragraph.add_run(" ")
 
 
 def add_image_block(document: Document, block: dict, page_width: float) -> None:
@@ -310,11 +403,7 @@ def convert_pdf(source: Path, destination: Path, pages_spec: str) -> list[dict]:
 
 @app.get("/status")
 def status():
-    try:
-        import pix2tex  # noqa: F401
-        formula_available = True
-    except ImportError:
-        formula_available = False
+    formula_available = formula_weights_ready()
     engine = "PyMuPDF + OOXML" + (" + pix2tex" if formula_available else "")
     return {"ready": True, "formulaModelInstalled": formula_available, "formulaModelLoaded": _formula_model is not None, "engine": engine}
 

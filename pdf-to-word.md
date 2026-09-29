@@ -163,9 +163,10 @@ permalink: /pdf-to-word.html
     if (!state.formulas.length) { elements.formulas.innerHTML = '<div class="pdf-word-empty">没有识别到明确的数学公式。普通正文不会被伪装成 LaTeX。</div>'; return; }
     elements.formulas.innerHTML = '';
     state.formulas.forEach((item, index) => {
-      const card = document.createElement('div'); card.className = 'pdf-word-formula'; card.innerHTML = `<div class="pdf-word-formula-head"><span>第 ${item.pageNumber} 页 · 公式 ${index + 1}</span><button class="pdf-word-copy" type="button">复制</button></div><textarea class="pdf-word-latex"></textarea><div class="pdf-word-preview"></div>`;
+      const method = item.method ? ` · ${item.method}` : ''; const card = document.createElement('div'); card.className = 'pdf-word-formula'; card.innerHTML = `<div class="pdf-word-formula-head"><span>第 ${item.pageNumber} 页 · 公式 ${index + 1}${method}</span><button class="pdf-word-copy" type="button">复制</button></div><textarea class="pdf-word-latex"></textarea><div class="pdf-word-preview"></div>`;
       const textarea = card.querySelector('textarea'); const preview = card.querySelector('.pdf-word-preview'); textarea.value = item.latex;
-      const draw = () => { item.latex = textarea.value; try { katex.render(item.latex, preview, { throwOnError: false, displayMode: true }); } catch (_) { preview.textContent = item.latex; } };
+      if (!item.latex && item.method === 'image fallback') { textarea.placeholder = '识别置信度不足，Word 中已保留原公式图像'; textarea.disabled = true; card.querySelector('button').disabled = true; }
+      const draw = () => { item.latex = textarea.value; if (!item.latex) { preview.textContent = '为避免错误，已保留原公式图像。'; return; } try { katex.render(item.latex, preview, { throwOnError: false, displayMode: true }); } catch (_) { preview.textContent = item.latex; } };
       textarea.addEventListener('input', draw); card.querySelector('button').addEventListener('click', () => navigator.clipboard.writeText(textarea.value)); draw(); elements.formulas.appendChild(card);
     });
   }
