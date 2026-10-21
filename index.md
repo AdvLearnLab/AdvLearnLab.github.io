@@ -170,7 +170,7 @@ He is also a visiting Ph.D. of Learning and Vision (LV) Lab at the National Univ
 
 ## Honors
 - 2025 **Co-supervised undergraduate students to win the National Second Prize in the National College Student Information Security Contest** (*FadeMind: A Multi-Concept Unlearning System for Diffusion Models*)
-- Supervised undergraduate students in a **National Undergraduate Innovation and Entrepreneurship Training Program** (Machine Unlearning)
+- 2026 Supervised undergraduate students in a **National Undergraduate Innovation and Entrepreneurship Training Program** (Machine Unlearning)
 - Member of the China Graphics Society’s Technical Committee on Animation and Graphics Engineering
 - Member of the CSIG Technical Committee on Forensics and Security
 - Member of IEEE, CCF, CSIG
