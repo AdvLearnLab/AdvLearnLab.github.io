@@ -78,6 +78,22 @@
 </div>
 </li>
 
+<li>
+<div class="pub-row">
+
+  <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
+    <abbr class="badge">CSC</abbr>
+  </div>
+
+  <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
+    <div class="title"><a href="https://www.nus.edu.sg/">CSC公派留学项目</a></div>
+    <div class="author"><strong>Visiting Ph.D. Student: Mengnan Zhao</strong></div>
+    <div class="periodical"><em>National University of Singapore, 2024.10 - 2025.04.</em></div>
+    <div class="pub-rank-badges"><span>Project</span><span>CSC</span><span>National University of Singapore</span><span>Visiting Ph.D.</span></div>
+  </div>
+</div>
+</li>
+
 </ol>
 </div>
 
