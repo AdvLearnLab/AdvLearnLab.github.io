@@ -1,6 +1,7 @@
 <h2 id="projects">Projects</h2>
 
 <div class="publications">
+<h3 class="pub-section-title" id="principal-projects">主持项目 / Principal Projects</h3>
 <ol class="bibliography">
 
 <!-- 
@@ -90,6 +91,39 @@
     <div class="author"><strong>Visiting Ph.D. Student: Mengnan Zhao</strong></div>
     <div class="periodical"><em>National University of Singapore, 2024.10 - 2025.04.</em></div>
     <div class="pub-rank-badges"><span>Project</span><span>CSC</span><span>National University of Singapore</span><span>Visiting Ph.D.</span></div>
+  </div>
+</div>
+</li>
+
+</ol>
+
+<h3 class="pub-section-title" id="participating-projects">参与项目 / Participating Projects</h3>
+<ol class="bibliography">
+
+<li>
+<div class="pub-row">
+  <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
+    <abbr class="badge">MOST</abbr>
+  </div>
+  <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
+    <div class="title"><a href="https://www.most.gov.cn/">国家重点研发计划：跨媒体知识图谱构建与演化</a></div>
+    <div class="author"><strong>Project Participant: Mengnan Zhao</strong></div>
+    <div class="periodical"><em>2019.12 - 2023.12, 768万元.</em></div>
+    <div class="pub-rank-badges"><span>参与</span><span>国家重点研发计划</span><span>Knowledge Graph</span><span>RMB 7.68M</span></div>
+  </div>
+</div>
+</li>
+
+<li>
+<div class="pub-row">
+  <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
+    <abbr class="badge">NSFC</abbr>
+  </div>
+  <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
+    <div class="title"><a href="https://www.nsfc.gov.cn/">国家自然科学基金重点项目：面向复杂工业场景的多模态跨域异常检测方法研究</a></div>
+    <div class="author"><strong>Project Participant: Mengnan Zhao</strong></div>
+    <div class="periodical"><em>2025.01 - 2029.12, 282万元.</em></div>
+    <div class="pub-rank-badges"><span>参与</span><span>国家自然科学基金重点项目</span><span>Multimodal Anomaly Detection</span><span>RMB 2.82M</span></div>
   </div>
 </div>
 </li>
