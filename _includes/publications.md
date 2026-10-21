@@ -591,22 +591,6 @@ by Memories</a></div>
 <li>
 <div class="pub-row">
   <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
-    <abbr class="badge">EMNLP</abbr>
-  </div>
-  <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
-    <div class="title"><a href="https://aclanthology.org/people/m/mengnan-zhao/">Tagging-Augmented Generation: Assisting Language Models in Finding Intricate Knowledge In Long Contexts</a></div>
-    <div class="author">Anwesan Pal, Karen Hovsepian, Tinghao Guo, <strong>Mengnan Zhao</strong>, Somendra Tripathi, Nikos Kanakaris, George Mihaila, Sumit Nigam</div>
-    <div class="pub-meta">
-    <div class="periodical"><em>Proceedings of EMNLP: Industry Track, 2025.</em></div>
-    <div class="pub-rank-badges"><span>Collaborative</span><span>Conference</span><span>CCF B</span></div>
-    </div>
-  </div>
-</div>
-</li>
-
-<li>
-<div class="pub-row">
-  <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
     <abbr class="badge">TMM</abbr>
   </div>
   <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
