@@ -57,6 +57,7 @@ permalink: /zh.html
 </div>
 
 <div class="news-timeline">
+  <div class="news-item"><time>2026-10</time><p>受<strong>浙江大学区块链与数据安全全国重点实验室开放课题</strong>支持。</p></div>
   <div class="news-item"><time>2026-08</time><p>获批 <strong>国家自然科学基金青年科学基金项目（C类）</strong>。</p></div>
   <div class="news-item"><time>2026-03</time><p>一篇机器遗忘方向论文被 <strong>中国科学-信息科学</strong> 接收。</p></div>
   <div class="news-item"><time>2026-02</time><p>一篇对抗训练方向论文被 <strong>CVPR</strong> 接收。</p></div>
