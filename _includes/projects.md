@@ -50,6 +50,22 @@
 <div class="pub-row">
 
   <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
+    <abbr class="badge">ZJU BCDS</abbr>
+  </div>
+
+  <div class="col-sm-9" style="position: relative;padding-right: 15px;padding-left: 20px;">
+    <div class="title"><a href="https://bcds.zju.edu.cn/kfkt/list.htm">基于模型表征分析的轻量级多模态大模型幻觉检测与评估研究</a></div>
+    <div class="author"><strong>Principal Investigator: Mengnan Zhao</strong></div>
+    <div class="periodical"><em>浙江大学区块链与数据安全全国重点实验室开放课题, 2026.10, 5万元.</em></div>
+    <div class="pub-rank-badges"><span>Project</span><span>ZJU BCDS</span><span>Open Fund</span><span>RMB 50K</span></div>
+  </div>
+</div>
+</li>
+
+<li>
+<div class="pub-row">
+
+  <div class="col-sm-3 abbr" style="position: relative;padding-right: 15px;padding-left: 15px;">
     <img src="assets/img/project-ahu-startup.jpg" class="teaser img-fluid z-depth-1">
     <abbr class="badge">AHU</abbr>
   </div>
